@@ -23,9 +23,11 @@ interface OdontogramChartProps {
   value: Odontogram;
   /** Sem `onChange` o odontograma é apenas de visualização. */
   onChange?: (next: Odontogram) => void;
+  /** Os dentes entram em sequência (usado na landing). */
+  animated?: boolean;
 }
 
-export function OdontogramChart({ value, onChange }: OdontogramChartProps) {
+export function OdontogramChart({ value, onChange, animated = false }: OdontogramChartProps) {
   const [selected, setSelected] = useState<string | null>(null);
   const editable = Boolean(onChange);
 
@@ -50,7 +52,8 @@ export function OdontogramChart({ value, onChange }: OdontogramChartProps) {
                 disabled={!editable}
                 onClick={() => setSelected(tooth)}
                 aria-label={`Dente ${tooth}: ${TOOTH_CONDITION_LABELS[entry.condition]}${entry.note ? `. ${entry.note}` : ""}`}
-                className="relative flex flex-col items-center gap-1 rounded-lg px-0.5 py-1 transition enabled:active:scale-90 enabled:hover:bg-brand-100/60 disabled:cursor-default"
+                style={animated ? { animation: "tooth-in 0.6s cubic-bezier(0.22, 1, 0.36, 1) both", animationDelay: `${index * 35}ms` } : undefined}
+                className="group/tooth relative flex flex-col items-center gap-1 rounded-lg px-0.5 py-1 transition enabled:active:scale-90 enabled:hover:-translate-y-1 enabled:hover:bg-brand-100/60 disabled:cursor-default"
               >
                 <span className="text-[11px] font-bold text-slate-500">{tooth}</span>
                 <span className="block h-12 w-full max-w-9 sm:h-14">
