@@ -187,7 +187,7 @@ export function PatientList() {
                       disabled={deletingId !== null}
                       aria-busy={deletingId === patient.id}
                       aria-label={`Excluir ${name}`}
-                      className="absolute right-3 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-lg text-slate-300 transition hover:bg-rose-50 hover:text-rose-600 md:right-14"
+                      className="absolute right-2 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-lg text-slate-300 transition hover:bg-rose-50 hover:text-rose-600 md:right-14"
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>

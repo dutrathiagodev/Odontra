@@ -10,6 +10,6 @@ export default defineConfig({
   test: {
     environment: "node",
     include: ["tests/**/*.test.ts", "**/*.test.ts"],
-    exclude: ["node_modules/**", ".next/**", "supabase/**"],
+    exclude: ["**/node_modules/**", ".next/**", "supabase/**", ".claude/**"],
   },
 });

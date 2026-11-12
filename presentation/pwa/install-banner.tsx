@@ -93,13 +93,13 @@ export function InstallBanner() {
           ) : (
             <>
               <p className="mt-0.5 text-muted">Abre em tela cheia, direto da tela inicial.</p>
-              <button type="button" onClick={install} className="mt-2 min-h-10 rounded-full bg-accent px-4 text-sm font-semibold text-white active:scale-95">
+              <button type="button" onClick={install} className="mt-2 min-h-11 rounded-full bg-accent px-4 text-sm font-semibold text-white active:scale-95">
                 Instalar
               </button>
             </>
           )}
         </div>
-        <button type="button" onClick={dismiss} aria-label="Agora não" className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-muted hover:bg-enamel">
+        <button type="button" onClick={dismiss} aria-label="Agora não" className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-muted hover:bg-enamel">
           <X className="h-4 w-4" />
         </button>
       </div>

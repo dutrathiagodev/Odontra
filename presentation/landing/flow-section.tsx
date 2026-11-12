@@ -1,7 +1,7 @@
 import { Bell, Camera, ClipboardList, FileDown, History, Printer, UserRound } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { ToothIcon } from "../ui/logo";
-import { ClinicPhoto } from "./clinic-photo";
+import { ClinicObject } from "./clinic-object";
 import { Reveal } from "./reveal";
 import { ToothMascot } from "./tooth-mascot";
 
@@ -11,12 +11,6 @@ const INPUTS: { icon: LucideIcon | typeof ToothIcon; title: string; text: string
   { icon: ToothIcon, title: "Odontograma", text: "condição de cada dente" },
   { icon: Camera, title: "Foto", text: "direto da câmera" },
 ];
-
-const MOMENTS = [
-  { photo: "glovedInstruments", label: "Na cadeira" },
-  { photo: "tabletScan", label: "No tablet" },
-  { photo: "panoramic", label: "Nos exames" },
-] as const;
 
 const OUTPUTS: { icon: LucideIcon; title: string; text: string }[] = [
   { icon: FileDown, title: "Prontuário em PDF", text: "no padrão da ficha impressa" },
@@ -61,7 +55,12 @@ function Wires({ side }: { side: "in" | "out" }) {
 
 export function FlowSection() {
   return (
-    <section id="como-funciona" className="bg-[#06101f] py-16 text-white sm:py-24">
+    <section id="como-funciona" className="relative isolate overflow-hidden bg-[#06101f] py-16 text-white sm:py-24">
+      {/* Panorâmica no canto: o preto do filme some (screen) e a borda se dissolve no fundo. */}
+      <ClinicObject
+        object="xray"
+        className="-bottom-16 -left-24 -z-10 w-[26rem] -rotate-6 opacity-[0.22] mix-blend-screen [mask-image:radial-gradient(closest-side,#000_55%,transparent)] sm:w-[36rem] lg:-bottom-24 lg:-left-28 lg:w-[46rem] lg:opacity-[0.28]"
+      />
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <Reveal>
           <h2 className="mx-auto max-w-3xl text-center text-3xl font-semibold leading-tight tracking-[-0.02em] sm:text-5xl">Você atende. O Odontra organiza o resto.</h2>
@@ -83,18 +82,6 @@ export function FlowSection() {
           </div>
         </div>
 
-        <ul className="mt-4 grid grid-cols-3 gap-2 sm:mt-6 sm:gap-4">
-          {MOMENTS.map((moment, i) => (
-            <li key={moment.photo}>
-              <Reveal delay={i * 90}>
-                <figure className="relative overflow-hidden rounded-2xl border border-white/10 sm:rounded-[22px]">
-                  <ClinicPhoto photo={moment.photo} width={600} height={440} sizes="(min-width: 1280px) 400px, 33vw" className="aspect-[4/5] sm:aspect-[15/11]" />
-                  <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[#06101f]/85 to-transparent px-2.5 pb-2 pt-8 text-xs font-medium text-white sm:px-4 sm:pb-3 sm:text-sm">{moment.label}</figcaption>
-                </figure>
-              </Reveal>
-            </li>
-          ))}
-        </ul>
       </div>
     </section>
   );

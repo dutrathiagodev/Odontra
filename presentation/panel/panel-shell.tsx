@@ -3,6 +3,7 @@ import { DemoBanner } from "../demo/demo-banner";
 import { InstallBanner } from "../pwa/install-banner";
 import { Logo } from "../ui/logo";
 import { PanelNav } from "./panel-nav";
+import { ProfileLink } from "./profile-link";
 import { SignOutButton } from "./sign-out-button";
 
 export function PanelShell({ children }: { children: ReactNode }) {
@@ -16,7 +17,10 @@ export function PanelShell({ children }: { children: ReactNode }) {
         <Suspense fallback={null}>
           <PanelNav variant="side" />
         </Suspense>
-        <div className="mt-auto">
+        <div className="mt-auto space-y-1">
+          <Suspense fallback={null}>
+            <ProfileLink variant="side" />
+          </Suspense>
           <SignOutButton variant="side" />
         </div>
       </aside>
@@ -24,7 +28,12 @@ export function PanelShell({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-30 bg-navy-900 shadow-md shadow-navy-950/20 lg:hidden">
         <div className="flex h-14 items-center justify-between px-4">
           <Logo href="/painel" />
-          <SignOutButton variant="header" />
+          <div className="flex items-center gap-1">
+            <Suspense fallback={null}>
+              <ProfileLink variant="header" />
+            </Suspense>
+            <SignOutButton variant="header" />
+          </div>
         </div>
       </header>
 

@@ -58,8 +58,9 @@ export function AuthShell({ title, description, children, footer, mode = "signin
             ))}
           </nav>
           <div className="flex items-center gap-4 text-sm">
-            <Link href="/entrar" className={`pb-0.5 ${mode === "signin" ? "border-b-2 border-white font-semibold text-white" : "text-white/70 hover:text-white"}`}>Entrar</Link>
-            <Link href="/cadastro" className={`rounded-full px-4 py-1.5 font-semibold ${mode === "signup" ? "bg-accent text-white" : "bg-white text-ink"}`}>Criar conta</Link>
+            {/* Mesmo tamanho e cor nas duas telas: só o sublinhado indica onde você está (sem pular de lugar). */}
+            <Link href="/entrar" aria-current={mode === "signin" ? "page" : undefined} className={`border-b-2 pb-0.5 font-semibold transition-colors ${mode === "signin" ? "border-white text-white" : "border-transparent text-white/70 hover:text-white"}`}>Entrar</Link>
+            <Link href="/cadastro" aria-current={mode === "signup" ? "page" : undefined} className="rounded-full bg-white px-4 py-1.5 font-semibold text-ink transition-colors hover:bg-[#dfe7f3]">Criar conta</Link>
           </div>
         </header>
 
