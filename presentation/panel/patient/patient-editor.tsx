@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { Anamnesis, Identification, Patient } from "@/domain/patient/patient";
 import { getPatient, savePatient, startNewPatient } from "@/infrastructure/container";
 import { formatRecordNumber } from "../../format";
+import { useLeaveGuard } from "../../hooks/use-leave-guard";
 import { useRecordEditor } from "../../hooks/use-record-editor";
 import { Avatar } from "../../ui/avatar";
 import { LoadState } from "../../ui/load-state";
@@ -31,6 +32,7 @@ export function PatientEditor({ patientId }: { patientId?: string }) {
     mergeSaved,
     deps: [patientId],
   });
+  const leaveDialog = useLeaveGuard(editor.dirty);
   const { value: patient, edit } = editor;
 
   if (editor.loadState !== "ready" || !patient) {
@@ -92,6 +94,7 @@ export function PatientEditor({ patientId }: { patientId?: string }) {
           disabled={!name.trim()}
         />
       )}
+      {leaveDialog}
     </div>
   );
 }

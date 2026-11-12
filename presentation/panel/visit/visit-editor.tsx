@@ -8,6 +8,7 @@ import type { Patient } from "@/domain/patient/patient";
 import type { Visit } from "@/domain/visit/visit";
 import { getPatient, getVisit, saveVisit, startNewVisit } from "@/infrastructure/container";
 import { formatRecordNumber } from "../../format";
+import { useLeaveGuard } from "../../hooks/use-leave-guard";
 import { useRecordEditor } from "../../hooks/use-record-editor";
 import { OdontogramChart } from "../../odontogram/odontogram-chart";
 import { downloadRecordPdf } from "../../pdf/pdf-actions";
@@ -65,6 +66,7 @@ export function VisitEditor({ patientId, visitId }: { patientId: string; visitId
     deps: [patientId, visitId],
   });
 
+  const leaveDialog = useLeaveGuard(editor.dirty);
   if (editor.loadState !== "ready" || !editor.value) {
     return <LoadState state={editor.loadState === "ready" ? "loading" : editor.loadState} error={editor.loadError} missingText="Consulta não encontrada." onRetry={editor.retry} />;
   }
@@ -117,6 +119,7 @@ export function VisitEditor({ patientId, visitId }: { patientId: string; visitId
       </div>
 
       <HealthAlerts anamnesis={patient.anamnesis} />
+      {leaveDialog}
       {exportError && <p role="alert" className="rounded-lg bg-rose-50 px-3 py-2 text-sm font-medium text-rose-700 ring-1 ring-rose-200">{exportError}</p>}
 
       <div className="grid grid-cols-2 gap-2">
