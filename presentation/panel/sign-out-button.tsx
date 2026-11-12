@@ -20,7 +20,7 @@ export function SignOutButton({ variant }: { variant: "side" | "header" }) {
       <LogOut className="h-[18px] w-[18px]" /> Sair
     </button>
   ) : (
-    <button type="button" onClick={signOut} aria-label="Sair" className="grid h-10 w-10 place-items-center rounded-lg text-white/80 hover:bg-white/10">
+    <button type="button" onClick={signOut} aria-label="Sair" className="-mr-1.5 grid h-11 w-11 place-items-center rounded-lg text-white/80 hover:bg-white/10">
       <LogOut className="h-5 w-5" />
     </button>
   );

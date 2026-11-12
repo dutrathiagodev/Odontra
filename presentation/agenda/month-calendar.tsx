@@ -33,10 +33,10 @@ export function MonthCalendar({ month, selected, today, byDay, onSelect, onMonth
       <header className="flex items-center justify-between px-3 pb-2 pt-1">
         <h2 className="text-[34px] font-extrabold capitalize leading-none tracking-tight text-ink">{monthTitle(month)}</h2>
         <div className="flex rounded-full bg-white/80 p-1 shadow-sm ring-1 ring-line backdrop-blur">
-          <button type="button" onClick={() => onMonthChange(-1)} aria-label="Mês anterior" className="grid h-9 w-9 place-items-center rounded-full text-ink active:bg-enamel">
+          <button type="button" onClick={() => onMonthChange(-1)} aria-label="Mês anterior" className="grid h-11 w-11 place-items-center rounded-full text-ink active:bg-enamel">
             <ChevronLeft className="h-5 w-5" />
           </button>
-          <button type="button" onClick={() => onMonthChange(1)} aria-label="Próximo mês" className="grid h-9 w-9 place-items-center rounded-full text-ink active:bg-enamel">
+          <button type="button" onClick={() => onMonthChange(1)} aria-label="Próximo mês" className="grid h-11 w-11 place-items-center rounded-full text-ink active:bg-enamel">
             <ChevronRight className="h-5 w-5" />
           </button>
         </div>
