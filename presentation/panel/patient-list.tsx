@@ -7,6 +7,7 @@ import { formatDate, formatRecordNumber } from "../format";
 import { usePatients } from "../hooks/use-patients";
 import { Avatar } from "../ui/avatar";
 import { linkButtonClass } from "../ui/button";
+import { useConfirm } from "../ui/confirm-dialog";
 import { PageHeader } from "../ui/page-header";
 
 function Stat({ icon, label, value }: { icon: ReactNode; label: string; value: number | string }) {
@@ -45,12 +46,20 @@ export function PatientList() {
     };
   }, [patients]);
 
-  const confirmRemove = (id: string, name: string) => {
-    if (window.confirm(`Excluir ${name || "este paciente"} e todo o histórico de consultas? Esta ação não pode ser desfeita.`)) void remove(id);
+  const { confirm, dialog } = useConfirm();
+
+  const confirmRemove = async (id: string, name: string) => {
+    const ok = await confirm({
+      title: `Excluir ${name || "este paciente"}?`,
+      description: "A ficha, a foto e todo o histórico de consultas serão apagados. Essa ação não pode ser desfeita.",
+      confirmLabel: "Excluir paciente",
+    });
+    if (ok) void remove(id);
   };
 
   return (
     <div>
+      {dialog}
       <PageHeader
         title="Pacientes"
         subtitle="Acompanhe prontuários, consultas e histórico de cada paciente."

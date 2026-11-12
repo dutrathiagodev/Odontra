@@ -9,6 +9,7 @@ import { deleteVisit, listVisits } from "@/infrastructure/container";
 import { formatDate } from "../../format";
 import { downloadRecordPdf, printRecordPdf } from "../../pdf/pdf-actions";
 import { Button, linkButtonClass } from "../../ui/button";
+import { useConfirm } from "../../ui/confirm-dialog";
 
 export function VisitHistory({ patient }: { patient: Patient }) {
   const [visits, setVisits] = useState<Visit[] | null>(null);
@@ -36,14 +37,22 @@ export function VisitHistory({ patient }: { patient: Patient }) {
     }
   };
 
+  const { confirm, dialog } = useConfirm();
+
   const remove = async (visit: Visit) => {
-    if (!window.confirm(`Excluir a consulta ${visit.sequence}? Esta ação não pode ser desfeita.`)) return;
+    const ok = await confirm({
+      title: `Excluir a consulta ${visit.sequence}?`,
+      description: "O odontograma, as anotações e os procedimentos desta consulta serão apagados. As outras consultas do paciente continuam.",
+      confirmLabel: "Excluir consulta",
+    });
+    if (!ok) return;
     await deleteVisit.execute(visit.id);
     refresh();
   };
 
   return (
     <div className="space-y-4">
+      {dialog}
       <Link href={`/painel/pacientes/${patient.id}/consultas/nova`} className={`${linkButtonClass()} w-full`}>
         <Plus className="h-4 w-4" /> Nova consulta
       </Link>
