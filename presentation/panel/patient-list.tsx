@@ -60,7 +60,7 @@ export function PatientList() {
   const confirmRemove = async (id: string, name: string) => {
     const ok = await confirm({
       title: `Excluir ${name || "este paciente"}?`,
-      description: "A ficha, a foto e todo o histórico de consultas serão apagados. Essa ação não pode ser desfeita.",
+      description: "A ficha, a foto e todo o histórico de consultas saem do Odontra. Por lei (Lei 13.787/2018), o prontuário fica arquivado com segurança por 20 anos e não volta a aparecer no app.",
       confirmLabel: "Excluir paciente",
     });
     if (!ok) return;

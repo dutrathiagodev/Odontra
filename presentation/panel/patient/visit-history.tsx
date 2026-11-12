@@ -37,7 +37,7 @@ export function VisitHistory({ patient }: { patient: Patient }) {
   const remove = async (visit: Visit) => {
     const ok = await confirm({
       title: `Excluir a consulta ${visit.sequence}?`,
-      description: "O odontograma, as anotações e os procedimentos desta consulta serão apagados. As outras consultas do paciente continuam.",
+      description: "O odontograma, as anotações e os procedimentos desta consulta saem do histórico. Por lei (Lei 13.787/2018), o registro fica arquivado com segurança por 20 anos. As outras consultas do paciente continuam.",
       confirmLabel: "Excluir consulta",
     });
     if (!ok) return;
