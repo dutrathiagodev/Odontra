@@ -9,13 +9,23 @@ import { GetVisit } from "@/application/visit/get-visit";
 import { ListVisits } from "@/application/visit/list-visits";
 import { SaveVisit } from "@/application/visit/save-visit";
 import { StartNewVisit } from "@/application/visit/start-new-visit";
+import type { PatientRepository } from "@/domain/patient/patient-repository";
+import type { VisitRepository } from "@/domain/visit/visit-repository";
 import { LocalStoragePatientRepository } from "./patient/local-storage-patient-repository";
+import { SupabasePatientRepository } from "./patient/supabase-patient-repository";
+import { getBrowserSupabase } from "./supabase/browser-client";
+import { isSupabaseConfigured } from "./supabase/env";
 import { LocalStorageVisitRepository } from "./visit/local-storage-visit-repository";
+import { SupabaseVisitRepository } from "./visit/supabase-visit-repository";
 
 // Composition root: único lugar que conhece as implementações concretas.
-// Para trocar o armazenamento (ex.: API/banco), basta trocar os repositórios abaixo.
-const patientRepository = new LocalStoragePatientRepository();
-const visitRepository = new LocalStorageVisitRepository();
+// Com Supabase configurado os dados vão para o banco (com login); sem ele, ficam no aparelho.
+const patientRepository: PatientRepository = isSupabaseConfigured
+  ? new SupabasePatientRepository(getBrowserSupabase)
+  : new LocalStoragePatientRepository();
+const visitRepository: VisitRepository = isSupabaseConfigured
+  ? new SupabaseVisitRepository(getBrowserSupabase)
+  : new LocalStorageVisitRepository();
 
 export const listPatients = new ListPatients(patientRepository);
 export const getPatient = new GetPatient(patientRepository);
