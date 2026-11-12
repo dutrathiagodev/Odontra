@@ -23,6 +23,30 @@
 
 html {
   -webkit-tap-highlight-color: transparent;
+  scrollbar-width: thin;
+  scrollbar-color: #2563eb #071b3f;
+}
+
+/* Barra de rolagem fina, nos tons da marca. */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #071b3f;
+}
+::-webkit-scrollbar-thumb {
+  background: #1d4ed8;
+  border: 2px solid #071b3f;
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3b82f6;
+}
+
+/* Elementos decorativos nunca criam rolagem horizontal. */
+body {
+  overflow-x: clip;
 }
 
 body {
