@@ -1,0 +1,29 @@
+name: Sem coautor de ferramenta
+
+# Reprova o PR se algum commit novo traz:
+#   - "Co-authored-by" de alguém que não está em .github/coautores-permitidos.txt
+#     (ferramentas de código costumam se colocar como coautoras assim);
+#   - a assinatura "Generated with ..." que essas ferramentas deixam na mensagem.
+# Assim a lista de contribuidores do GitHub fica só com as pessoas da equipe.
+# Coautor de verdade (pessoa da equipe)? Coloque o e-mail dela em .github/coautores-permitidos.txt.
+on:
+  pull_request:
+    branches: [develop, main]
+
+permissions:
+  contents: read
+
+jobs:
+  sem-coautor-de-ia:
+    name: sem-coautor-de-ia
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Procurar coautor ou assinatura de ferramenta nos commits do PR
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.pull_request.head.sha }}
+        run: bash scripts/sem-coautor.sh "$BASE" "$HEAD"

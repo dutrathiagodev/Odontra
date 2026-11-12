@@ -1,0 +1,30 @@
+name: Entrega na main
+
+# A main (produção) só recebe a entrega que sai da develop.
+# PR de tarefa (Odontra/<card>-descricao) vai para a develop.
+# Para valer, o check "so-da-develop" é obrigatório no ruleset da main (ver docs/git-flow.md).
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, reopened, synchronize, edited]
+
+permissions: {}
+
+jobs:
+  so-da-develop:
+    name: so-da-develop
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - name: Conferir a branch de origem
+        env:
+          ORIGEM: ${{ github.head_ref }}
+          REPO_ORIGEM: ${{ github.event.pull_request.head.repo.full_name }}
+          REPO_DESTINO: ${{ github.repository }}
+        run: |
+          if [ "$ORIGEM" != "develop" ] || [ "$REPO_ORIGEM" != "$REPO_DESTINO" ]; then
+            echo "PR para a main só pode vir da develop deste repositório (veio de: $REPO_ORIGEM:$ORIGEM)."
+            echo "Abra o PR da tarefa para a develop. A entrega na main é o PR develop -> main."
+            exit 1
+          fi
+          echo "Origem conferida: develop."

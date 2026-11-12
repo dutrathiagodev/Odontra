@@ -1,0 +1,44 @@
+name: CI
+
+# Roda em todo Pull Request para develop e main e em todo push nessas branches.
+# Passos: instalar, lint, typecheck, testes e build. Se um falhar, o PR fica vermelho.
+on:
+  pull_request:
+    branches: [develop, main]
+  push:
+    branches: [develop, main]
+
+concurrency:
+  group: ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  qualidade:
+    name: qualidade
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      # Valores de mentira só para a build compilar. A build não fala com o banco.
+      NEXT_PUBLIC_SUPABASE_URL: https://ci-exemplo.supabase.co
+      NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: sb_publishable_ci_exemplo
+      NEXT_PUBLIC_SITE_URL: https://odontra.vercel.app
+      NEXT_TELEMETRY_DISABLED: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - name: Instalar dependências
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Testes
+        run: npm test
+      - name: Build
+        run: npm run build
