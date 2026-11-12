@@ -7,24 +7,26 @@ import { getBrowserSupabase } from "@/infrastructure/supabase/browser-client";
 import { safeNextPath } from "@/infrastructure/supabase/safe-next";
 import { authErrorMessage } from "./auth-errors";
 import { AuthField, FormMessage, SubmitButton } from "./auth-field";
+import { useAuthSubmit } from "./use-auth-submit";
+
+const LINK_EXPIRED = "O link expirou ou já foi usado. Entre com sua senha ou peça um novo link.";
 
 export function SignInForm() {
   const router = useRouter();
   const params = useSearchParams();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState(params.get("erro") === "link" ? "O link expirou ou já foi usado. Entre com sua senha ou peça um novo link." : "");
+  const { busy, error, setError, run } = useAuthSubmit(params.get("erro") === "link" ? LINK_EXPIRED : "");
 
-  const submit = async (event: FormEvent) => {
+  const submit = (event: FormEvent) => {
     event.preventDefault();
-    setBusy(true);
-    setError("");
-    const { error: authError } = await getBrowserSupabase().auth.signInWithPassword({ email: email.trim(), password });
-    setBusy(false);
-    if (authError) return setError(authErrorMessage(authError));
-    router.replace(safeNextPath(params.get("next")));
-    router.refresh();
+    if (!email.trim() || !password) return setError("Informe e-mail e senha.");
+    run(async () => {
+      const { error: authError } = await getBrowserSupabase().auth.signInWithPassword({ email: email.trim(), password });
+      if (authError) return authErrorMessage(authError);
+      router.replace(safeNextPath(params.get("next")));
+      router.refresh();
+    });
   };
 
   return (
