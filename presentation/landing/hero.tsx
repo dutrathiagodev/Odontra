@@ -97,7 +97,7 @@ export function Hero() {
                 <span className="rounded-full bg-brand-50 px-3 py-1 text-xs font-bold text-brand-700">Odontograma</span>
               </div>
               <div className="text-navy-900">
-                <OdontogramChart value={teeth} onChange={setTeeth} animated />
+                <OdontogramChart value={teeth} onChange={setTeeth} animated showList={false} />
               </div>
               <p className="pointer-events-none absolute -top-3 right-4 flex items-center gap-1.5 rounded-full bg-brand-600 px-3 py-1.5 text-xs font-bold text-white shadow-lg shadow-brand-600/40">
                 <MousePointerClick className="h-3.5 w-3.5" /> Toque num dente

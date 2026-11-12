@@ -23,7 +23,7 @@ export function ChartScene() {
           </span>
         ))}
       </div>
-      <OdontogramChart value={SAMPLE} animated />
+      <OdontogramChart value={SAMPLE} animated showList={false} />
     </div>
   );
 }
