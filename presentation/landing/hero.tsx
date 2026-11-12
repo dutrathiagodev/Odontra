@@ -5,11 +5,11 @@ import { HeroDemo } from "./hero/hero-demo";
 
 export function Hero() {
   return (
-    <section id="inicio" className="relative isolate overflow-hidden bg-[#06101f] text-white">
+    <section id="inicio" className="relative isolate flex min-h-[100svh] items-center overflow-hidden bg-[#06101f] text-white">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(55%_60%_at_80%_30%,rgba(35,87,217,0.28),transparent_70%)]" aria-hidden />
       <BigTooth hatched className="pointer-events-none absolute -left-24 bottom-[-6rem] -z-10 h-[32rem] -rotate-12 opacity-[0.06]" />
 
-      <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 pb-16 pt-28 sm:px-8 sm:pt-36 lg:grid-cols-[1fr_1.05fr] lg:pb-28">
+      <div className="mx-auto grid w-full max-w-7xl items-center gap-12 px-5 pb-28 pt-28 sm:px-8 sm:pt-36 lg:grid-cols-[1fr_1.05fr] lg:pb-28">
         <div className="hero-intro">
           <h1 className="text-[2.35rem] font-semibold leading-[1.05] tracking-[-0.02em] sm:text-6xl">
             Você estudou para cuidar de sorrisos.
