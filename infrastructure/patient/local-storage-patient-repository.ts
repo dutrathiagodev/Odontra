@@ -3,12 +3,18 @@ import { RecordNotFoundError } from "@/domain/errors";
 import type { Patient, PatientSummary } from "@/domain/patient/patient";
 import type { PatientRepository } from "@/domain/patient/patient-repository";
 import type { Visit } from "@/domain/visit/visit";
-import { LocalStorageCollection } from "../local-storage-collection";
+import { DEVICE_STORE, LocalStorageCollection, type BrowserStoreConfig } from "../local-storage-collection";
 
 export class LocalStoragePatientRepository implements PatientRepository {
-  private readonly store = new LocalStorageCollection<Patient>("pronturario-maju:patients");
-  private readonly visits = new LocalStorageCollection<Visit>("pronturario-maju:visits");
-  private readonly appointments = new LocalStorageCollection<Appointment>("odontra:appointments");
+  private readonly store: LocalStorageCollection<Patient>;
+  private readonly visits: LocalStorageCollection<Visit>;
+  private readonly appointments: LocalStorageCollection<Appointment>;
+
+  constructor(config: BrowserStoreConfig = DEVICE_STORE) {
+    this.store = new LocalStorageCollection<Patient>(config.patients, config.kind);
+    this.visits = new LocalStorageCollection<Visit>(config.visits, config.kind);
+    this.appointments = new LocalStorageCollection<Appointment>(config.appointments, config.kind);
+  }
 
   async findAll(): Promise<PatientSummary[]> {
     return this.store.all().map((p) => ({
