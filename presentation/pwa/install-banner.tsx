@@ -20,11 +20,19 @@ function readDismissed(): boolean {
   }
 }
 
+function remember() {
+  try {
+    localStorage.setItem(DISMISS_KEY, "1");
+  } catch {
+    /* navegação privada: aparece de novo na próxima visita */
+  }
+}
+
 /**
  * Convite para colocar o Odontra na tela de início e usar como app.
  * iPhone/iPad (Safari): ensina o caminho Compartilhar → Adicionar à Tela de Início (a Apple não deixa abrir por código).
  * Android/Chrome: botão Instalar com o prompt nativo.
- * Some quando já está instalado ou quando a pessoa fecha.
+ * Aparece uma vez por aparelho (celular/tablet) e nunca quando já está instalado.
  */
 export function InstallBanner() {
   const [mode, setMode] = useState<Mode>("hidden");
@@ -33,7 +41,10 @@ export function InstallBanner() {
   useEffect(() => {
     const standalone =
       window.matchMedia("(display-mode: standalone)").matches || (navigator as Navigator & { standalone?: boolean }).standalone === true;
-    if (standalone || readDismissed()) return;
+    // Só em celular e tablet, e uma única vez: depois de aparecer, não volta (a menos que limpe os dados do site).
+    const touch = window.matchMedia("(pointer: coarse)").matches;
+    if (standalone || !touch || readDismissed()) return;
+    remember();
 
     const ua = navigator.userAgent;
     const isIOS = /iPhone|iPad|iPod/.test(ua) || (ua.includes("Macintosh") && navigator.maxTouchPoints > 1);
@@ -52,14 +63,7 @@ export function InstallBanner() {
     };
   }, []);
 
-  const dismiss = () => {
-    setMode("hidden");
-    try {
-      localStorage.setItem(DISMISS_KEY, "1");
-    } catch {
-      /* navegação privada: só esconde nesta visita */
-    }
-  };
+  const dismiss = () => setMode("hidden");
 
   const install = async () => {
     if (!deferred) return;
