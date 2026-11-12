@@ -1,4 +1,5 @@
 import { Suspense, type ReactNode } from "react";
+import { InstallBanner } from "../pwa/install-banner";
 import { Logo } from "../ui/logo";
 import { PanelNav } from "./panel-nav";
 import { SignOutButton } from "./sign-out-button";
@@ -33,6 +34,7 @@ export function PanelShell({ children }: { children: ReactNode }) {
       <Suspense fallback={null}>
         <PanelNav variant="bottom" />
       </Suspense>
+      <InstallBanner />
     </div>
   );
 }
