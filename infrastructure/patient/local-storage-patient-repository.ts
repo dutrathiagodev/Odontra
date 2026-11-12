@@ -1,6 +1,6 @@
 import type { Appointment } from "@/domain/appointment/appointment";
 import { RecordNotFoundError } from "@/domain/errors";
-import type { Patient } from "@/domain/patient/patient";
+import type { Patient, PatientSummary } from "@/domain/patient/patient";
 import type { PatientRepository } from "@/domain/patient/patient-repository";
 import type { Visit } from "@/domain/visit/visit";
 import { LocalStorageCollection } from "../local-storage-collection";
@@ -10,12 +10,21 @@ export class LocalStoragePatientRepository implements PatientRepository {
   private readonly visits = new LocalStorageCollection<Visit>("pronturario-maju:visits");
   private readonly appointments = new LocalStorageCollection<Appointment>("odontra:appointments");
 
-  async findAll() {
-    return this.store.all();
+  async findAll(): Promise<PatientSummary[]> {
+    return this.store.all().map((p) => ({
+      id: p.id,
+      number: p.number,
+      createdAt: p.createdAt,
+      updatedAt: p.updatedAt,
+      thumb: p.photoThumb || p.photo,
+      identification: p.identification,
+    }));
   }
 
   async findById(id: string) {
-    return this.store.all().find((p) => p.id === id) ?? null;
+    const found = this.store.all().find((p) => p.id === id);
+    // Registros gravados antes da miniatura não têm o campo.
+    return found ? { ...found, photoThumb: found.photoThumb ?? "" } : null;
   }
 
   async save(patient: Patient) {

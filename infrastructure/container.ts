@@ -17,6 +17,7 @@ import { LocalStorageAppointmentRepository } from "./appointment/local-storage-a
 import { SupabaseAppointmentRepository } from "./appointment/supabase-appointment-repository";
 import { LocalStoragePatientRepository } from "./patient/local-storage-patient-repository";
 import { SupabasePatientRepository } from "./patient/supabase-patient-repository";
+import { makeCanvasThumbnail } from "./image/canvas-thumbnail";
 import { getBrowserSupabase } from "./supabase/browser-client";
 import { isSupabaseConfigured } from "./supabase/env";
 import { LocalStorageVisitRepository } from "./visit/local-storage-visit-repository";
@@ -39,7 +40,7 @@ const appointmentRepository: AppointmentRepository = useDatabase
 
 export const listPatients = new ListPatients(patientRepository);
 export const getPatient = new GetPatient(patientRepository);
-export const savePatient = new SavePatient(patientRepository);
+export const savePatient = new SavePatient(patientRepository, makeCanvasThumbnail);
 export const startNewPatient = new StartNewPatient(patientRepository);
 export const deletePatient = new DeletePatient(patientRepository);
 

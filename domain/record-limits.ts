@@ -1,6 +1,6 @@
 import { InvalidRecordError } from "./errors";
 import type { Patient } from "./patient/patient";
-import { isValidPhoto } from "./patient/photo";
+import { isValidPhoto, isValidThumb } from "./patient/photo";
 import type { Visit } from "./visit/visit";
 
 /**
@@ -21,7 +21,7 @@ export function jsonBytes(value: unknown): number {
 const TOO_LONG = "Algum campo ficou longo demais para salvar. Encurte os textos maiores e tente de novo.";
 
 export function assertPatientWithinLimits(patient: Patient): void {
-  if (!isValidPhoto(patient.photo)) {
+  if (!isValidPhoto(patient.photo) || !isValidThumb(patient.photoThumb)) {
     throw new InvalidRecordError("A foto está num formato inválido ou grande demais. Remova a foto ou escolha outra e tente de novo.");
   }
   if (jsonBytes(patient.identification) > JSON_LIMITS.identification || jsonBytes(patient.anamnesis) > JSON_LIMITS.anamnesis) {
