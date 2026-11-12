@@ -1,20 +1,8 @@
-import { TOOTH_PATH } from "../odontogram/condition-style";
+import { Molar } from "../ui/molar";
 
-/** Dente grande em estilo de ilustração, usado quando não há foto. */
-export function BigTooth({ className = "", tone = "light", style }: { className?: string; tone?: "light" | "blue"; style?: React.CSSProperties }) {
-  const fill = tone === "light" ? "#ffffff" : "#dbeafe";
-  return (
-    <svg viewBox="0 0 24 40" className={className} style={style} aria-hidden>
-      <defs>
-        <linearGradient id={`tooth-${tone}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor={fill} />
-          <stop offset="1" stopColor="#bfdbfe" />
-        </linearGradient>
-      </defs>
-      <path d={TOOTH_PATH} fill={`url(#tooth-${tone})`} stroke="#93c5fd" strokeWidth={0.6} strokeLinejoin="round" />
-      <path d="M8 8 C9 6 12 5.500 14 6.200" stroke="#ffffff" strokeWidth={1.2} strokeLinecap="round" fill="none" opacity={0.9} />
-    </svg>
-  );
+/** Dente ilustrado (molar em traço contínuo). Mantido como atalho para o componente Molar. */
+export function BigTooth({ className = "", tone = "light", style, hatched = false }: { className?: string; tone?: "light" | "blue" | "ink"; style?: React.CSSProperties; hatched?: boolean }) {
+  return <Molar className={className} tone={tone} style={style} hatched={hatched} />;
 }
 
 export function Sparkle({ className = "h-4 w-4" }: { className?: string }) {

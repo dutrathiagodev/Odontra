@@ -19,7 +19,7 @@ function Art() {
   return (
     <div className="relative grid h-full w-full place-items-center">
       <div className="absolute h-64 w-64 rounded-full bg-accent/35 blur-3xl" />
-      <BigTooth style={{ "--r": "-8deg" } as React.CSSProperties} className="animate-float-tooth relative h-64 drop-shadow-[0_30px_50px_rgba(35,87,217,0.55)] sm:h-80" />
+      <BigTooth hatched style={{ "--r": "-6deg" } as React.CSSProperties} className="animate-float-tooth relative h-72 drop-shadow-[0_20px_40px_rgba(35,87,217,0.45)] sm:h-96" />
     </div>
   );
 }
@@ -67,7 +67,7 @@ export function AuthShell({ title, description, children, footer, mode = "signin
             {AUTH_ART.image ? (
               <img src={AUTH_ART.image} alt="" className="h-full w-full object-cover opacity-15" />
             ) : (
-              <BigTooth className="h-[34rem] -rotate-12 opacity-[0.09]" />
+              <BigTooth hatched className="h-[30rem] -rotate-6 opacity-[0.12]" />
             )}
           </div>
           <div className="relative w-full max-w-sm">

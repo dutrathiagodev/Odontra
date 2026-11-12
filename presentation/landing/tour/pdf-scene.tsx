@@ -24,7 +24,7 @@ export function PdfScene() {
             {title === "Odontograma" ? (
               <div className="mt-1.5 grid grid-cols-8 gap-0.5">
                 {Array.from({ length: 16 }, (_, i) => (
-                  <BigTooth key={i} tone={i % 6 === 2 ? "blue" : "light"} className="h-5 w-full" />
+                  <BigTooth key={i} tone="ink" className="h-5 w-full" />
                 ))}
               </div>
             ) : (
