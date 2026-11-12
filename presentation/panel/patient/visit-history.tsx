@@ -9,7 +9,8 @@ import { deleteVisit, listVisits } from "@/infrastructure/container";
 import { withTimeout } from "../../async/with-timeout";
 import { formatDate } from "../../format";
 import { useAsync } from "../../hooks/use-async";
-import { downloadRecordPdf, printRecordPdf } from "../../pdf/pdf-actions";
+import { downloadRecordPdf } from "../../pdf/pdf-actions";
+import { usePrintRecord } from "../../pdf/use-print-record";
 import { Button, linkButtonClass } from "../../ui/button";
 import { useConfirm } from "../../ui/confirm-dialog";
 
@@ -18,6 +19,8 @@ export function VisitHistory({ patient }: { patient: Patient }) {
   const visits = state.status === "ready" ? state.data : null;
   const [busyId, setBusyId] = useState<string | null>(null);
   const [actionError, setActionError] = useState("");
+  const printer = usePrintRecord();
+  const [printingId, setPrintingId] = useState<string | null>(null);
 
   const run = async (visit: Visit, action: (p: Patient, v: Visit) => Promise<void>) => {
     setBusyId(visit.id);
@@ -29,6 +32,13 @@ export function VisitHistory({ patient }: { patient: Patient }) {
     } finally {
       setBusyId(null);
     }
+  };
+
+  // Chamado direto no toque: no iPhone/iPad a aba do PDF precisa abrir nesse momento.
+  const print = (visit: Visit) => {
+    setActionError("");
+    setPrintingId(visit.id);
+    printer.print(async () => ({ patient, visit }));
   };
 
   const { confirm, dialog } = useConfirm();
@@ -73,7 +83,7 @@ export function VisitHistory({ patient }: { patient: Patient }) {
         <ol className="relative space-y-3 border-l-2 border-brand-100 pl-4">
           {visits.map((visit) => {
             const marked = Object.keys(visit.odontogram).length;
-            const busy = busyId === visit.id;
+            const busy = busyId === visit.id || (printer.busy && printingId === visit.id);
             return (
               <li key={visit.id} className="relative rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm">
                 <span className="absolute -left-[25px] top-5 h-3 w-3 rounded-full bg-brand-600 ring-4 ring-brand-100" />
@@ -91,7 +101,7 @@ export function VisitHistory({ patient }: { patient: Patient }) {
                   <Button variant="secondary" disabled={busy} onClick={() => run(visit, downloadRecordPdf)} className="flex-1">
                     <FileDown className="h-4 w-4" /> PDF
                   </Button>
-                  <Button variant="secondary" disabled={busy} onClick={() => run(visit, printRecordPdf)} className="flex-1">
+                  <Button variant="secondary" disabled={busy} onClick={() => print(visit)} className="flex-1">
                     <Printer className="h-4 w-4" /> Imprimir
                   </Button>
                   <Button variant="danger" onClick={() => remove(visit)} aria-label="Excluir consulta" className="px-3">
