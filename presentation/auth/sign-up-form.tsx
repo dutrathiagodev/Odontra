@@ -32,6 +32,8 @@ export function SignUpForm() {
       if (authError) return authErrorMessage(authError);
       // Conta criada já com sessão: entra direto no painel.
       if (data.session) {
+        // Boas-vindas por e-mail em segundo plano: não segura a entrada no painel.
+        void fetch("/api/boas-vindas", { method: "POST" }).catch(() => undefined);
         router.replace("/painel");
         router.refresh();
         return;
