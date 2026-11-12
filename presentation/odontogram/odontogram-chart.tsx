@@ -25,9 +25,11 @@ interface OdontogramChartProps {
   onChange?: (next: Odontogram) => void;
   /** Os dentes entram em sequência (usado na landing). */
   animated?: boolean;
+  /** Lista abaixo do desenho com os dentes que têm condição ou observação. */
+  showList?: boolean;
 }
 
-export function OdontogramChart({ value, onChange, animated = false }: OdontogramChartProps) {
+export function OdontogramChart({ value, onChange, animated = false, showList = true }: OdontogramChartProps) {
   const [selected, setSelected] = useState<string | null>(null);
   const editable = Boolean(onChange);
 
@@ -80,7 +82,7 @@ export function OdontogramChart({ value, onChange, animated = false }: Odontogra
         ))}
       </ul>
 
-      {annotated.length > 0 && (
+      {showList && annotated.length > 0 && (
         <div>
           <h3 className="mb-2 text-sm font-bold text-navy-900">Dentes registrados</h3>
           <ul className="space-y-2">
