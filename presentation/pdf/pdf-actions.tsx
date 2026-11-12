@@ -12,7 +12,8 @@ async function buildPdfBlob(patient: Patient, visit: Visit): Promise<Blob> {
   ]);
   const siteUrl = getSiteUrl();
   const qrDataUrl = siteUrl ? await createQrDataUrl(siteUrl, 160) : undefined;
-  return pdf(<RecordPdf patient={patient} visit={visit} qrDataUrl={qrDataUrl} siteUrl={siteUrl} />).toBlob();
+  const logoSrc = `${window.location.origin}/logo-mark-ink.png`;
+  return pdf(<RecordPdf patient={patient} visit={visit} logoSrc={logoSrc} qrDataUrl={qrDataUrl} siteUrl={siteUrl} />).toBlob();
 }
 
 function fileName(patient: Patient, visit: Visit): string {
