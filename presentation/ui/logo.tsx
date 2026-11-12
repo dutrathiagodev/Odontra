@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 /** Ícone genérico de dente (usado em listas e botões). */
@@ -9,26 +10,13 @@ export function ToothIcon({ className = "h-6 w-6" }: { className?: string }) {
   );
 }
 
-/**
- * Marca do Odontra: molar em traço contínuo com um "M" no centro.
- * Para usar o arquivo oficial da logo, troque o conteúdo deste componente por
- * <Image src="/logo.svg" ... /> (arquivo em `public/`).
- */
-export function LogoMark({ className = "h-9 w-9" }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" strokeWidth="5.5" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden>
-      <path d="M32 14C19 14 13 25 15 40c1.500 11 6 20 8 33 1.200 8 7.500 11 10.500 3.500C36 70 37 61 41 57.500c3-2.600 15-2.600 18 0C63 61 64 70 66.500 76.500 69.500 84 75.800 81 77 73c2-13 6.500-22 8-33 2-15-4-26-17-26-8 0-12 5-18 5s-10-5-18-5Z" />
-      <path d="M37 60V36l13 14 13-14v24" strokeWidth="5" />
-    </svg>
-  );
-}
-
 export function Logo({ tone = "light", href = "/" }: { tone?: "light" | "dark"; href?: string }) {
-  const text = tone === "light" ? "text-white" : "text-navy-900";
+  // Os arquivos da logo são brancos; no tom escuro eles são escurecidos por CSS.
+  const filter = tone === "dark" ? "brightness-0" : "";
   return (
-    <Link href={href} className={`flex items-center gap-2.5 ${text}`} aria-label="Odontra">
-      <LogoMark className="h-10 w-10" />
-      <span className="text-2xl font-bold leading-none tracking-tight">Odontra</span>
+    <Link href={href} className="flex items-center gap-3" aria-label="Odontra">
+      <Image src="/logo-mark.png" alt="" width={292} height={293} className={`h-11 w-11 object-contain ${filter}`} priority />
+      <Image src="/logo-wordmark.png" alt="Odontra" width={573} height={118} className={`h-[22px] w-auto object-contain ${filter}`} priority />
     </Link>
   );
 }
