@@ -1,3 +1,4 @@
+import { DeleteAppointment, ListAppointments, SaveAppointment } from "@/application/appointment/appointment-use-cases";
 import { DeletePatient } from "@/application/patient/delete-patient";
 import { GetPatient } from "@/application/patient/get-patient";
 import { ListPatients } from "@/application/patient/list-patients";
@@ -9,8 +10,11 @@ import { GetVisit } from "@/application/visit/get-visit";
 import { ListVisits } from "@/application/visit/list-visits";
 import { SaveVisit } from "@/application/visit/save-visit";
 import { StartNewVisit } from "@/application/visit/start-new-visit";
+import type { AppointmentRepository } from "@/domain/appointment/appointment-repository";
 import type { PatientRepository } from "@/domain/patient/patient-repository";
 import type { VisitRepository } from "@/domain/visit/visit-repository";
+import { LocalStorageAppointmentRepository } from "./appointment/local-storage-appointment-repository";
+import { SupabaseAppointmentRepository } from "./appointment/supabase-appointment-repository";
 import { LocalStoragePatientRepository } from "./patient/local-storage-patient-repository";
 import { SupabasePatientRepository } from "./patient/supabase-patient-repository";
 import { getBrowserSupabase } from "./supabase/browser-client";
@@ -19,13 +23,19 @@ import { LocalStorageVisitRepository } from "./visit/local-storage-visit-reposit
 import { SupabaseVisitRepository } from "./visit/supabase-visit-repository";
 
 // Composition root: único lugar que conhece as implementações concretas.
-// Com Supabase configurado os dados vão para o banco (com login); sem ele, ficam no aparelho.
-const patientRepository: PatientRepository = isSupabaseConfigured
+// Com Supabase os dados vão para o banco (com login). Armazenamento no aparelho só em desenvolvimento:
+// em produção sem as variáveis, o repositório do Supabase falha com erro claro em vez de gravar no navegador.
+const useDatabase = isSupabaseConfigured || process.env.NODE_ENV === "production";
+
+const patientRepository: PatientRepository = useDatabase
   ? new SupabasePatientRepository(getBrowserSupabase)
   : new LocalStoragePatientRepository();
-const visitRepository: VisitRepository = isSupabaseConfigured
+const visitRepository: VisitRepository = useDatabase
   ? new SupabaseVisitRepository(getBrowserSupabase)
   : new LocalStorageVisitRepository();
+const appointmentRepository: AppointmentRepository = useDatabase
+  ? new SupabaseAppointmentRepository(getBrowserSupabase)
+  : new LocalStorageAppointmentRepository();
 
 export const listPatients = new ListPatients(patientRepository);
 export const getPatient = new GetPatient(patientRepository);
@@ -40,3 +50,7 @@ export const getVisit = new GetVisit(visitRepository);
 export const saveVisit = new SaveVisit(visitRepository);
 export const startNewVisit = new StartNewVisit(visitRepository);
 export const deleteVisit = new DeleteVisit(visitRepository);
+
+export const listAppointments = new ListAppointments(appointmentRepository);
+export const saveAppointment = new SaveAppointment(appointmentRepository);
+export const deleteAppointment = new DeleteAppointment(appointmentRepository);
