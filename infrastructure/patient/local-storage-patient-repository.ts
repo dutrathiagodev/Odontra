@@ -23,7 +23,10 @@ export class LocalStoragePatientRepository implements PatientRepository {
     return patient;
   }
 
-  /** Mesmo efeito do banco: as consultas saem junto e a agenda perde só o vínculo. */
+  /**
+   * Mesmo efeito visível do banco: as consultas saem junto e a agenda perde só o vínculo.
+   * Aqui (só desenvolvimento, dados no aparelho) apaga de fato; no Supabase é arquivamento.
+   */
   async delete(id: string) {
     if (!this.store.all().some((p) => p.id === id)) throw new RecordNotFoundError();
     this.visits.remove((v) => v.patientId === id);

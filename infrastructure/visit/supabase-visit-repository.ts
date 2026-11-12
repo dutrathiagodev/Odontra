@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { RecordNotFoundError } from "@/domain/errors";
 import type { Visit } from "@/domain/visit/visit";
 import type { VisitRepository } from "@/domain/visit/visit-repository";
+import { archiveRow } from "../supabase/archive-row";
 
 const COLUMNS = "id, patient_id, sequence, visit_date, dentist, reason, oral_health, clinical_exam, odontogram, findings, created_at, updated_at";
 
@@ -42,13 +42,14 @@ export class SupabaseVisitRepository implements VisitRepository {
   constructor(private readonly db: () => SupabaseClient) {}
 
   async findByPatient(patientId: string): Promise<Visit[]> {
-    const { data, error } = await this.db().from("visits").select(COLUMNS).eq("patient_id", patientId);
+    // A RLS já esconde as arquivadas; o filtro explícito deixa a intenção clara e usa o índice parcial.
+    const { data, error } = await this.db().from("visits").select(COLUMNS).eq("patient_id", patientId).is("deleted_at", null);
     if (error) throw error;
     return (data as VisitRow[]).map(toDomain);
   }
 
   async findById(id: string): Promise<Visit | null> {
-    const { data, error } = await this.db().from("visits").select(COLUMNS).eq("id", id).maybeSingle();
+    const { data, error } = await this.db().from("visits").select(COLUMNS).eq("id", id).is("deleted_at", null).maybeSingle();
     if (error) throw error;
     return data ? toDomain(data as VisitRow) : null;
   }
@@ -71,9 +72,7 @@ export class SupabaseVisitRepository implements VisitRepository {
   }
 
   async delete(id: string): Promise<void> {
-    // A RLS não dá erro quando a linha não é visível: confere se algo foi de fato excluído.
-    const { data, error } = await this.db().from("visits").delete().eq("id", id).select("id");
-    if (error) throw error;
-    if (!data || data.length === 0) throw new RecordNotFoundError();
+    // O banco transforma o DELETE em arquivamento (guardada por 20 anos).
+    await archiveRow(this.db(), "visits", id);
   }
 }

@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { RecordNotFoundError } from "@/domain/errors";
 import type { Patient } from "@/domain/patient/patient";
 import type { PatientRepository } from "@/domain/patient/patient-repository";
+import { archiveRow } from "../supabase/archive-row";
 
 const COLUMNS = "id, record_number, photo, identification, anamnesis, created_at, updated_at";
 
@@ -32,13 +32,14 @@ export class SupabasePatientRepository implements PatientRepository {
   constructor(private readonly db: () => SupabaseClient) {}
 
   async findAll(): Promise<Patient[]> {
-    const { data, error } = await this.db().from("patients").select(COLUMNS);
+    // A RLS já esconde os arquivados; o filtro explícito deixa a intenção clara e usa o índice parcial.
+    const { data, error } = await this.db().from("patients").select(COLUMNS).is("deleted_at", null);
     if (error) throw error;
     return (data as PatientRow[]).map(toDomain);
   }
 
   async findById(id: string): Promise<Patient | null> {
-    const { data, error } = await this.db().from("patients").select(COLUMNS).eq("id", id).maybeSingle();
+    const { data, error } = await this.db().from("patients").select(COLUMNS).eq("id", id).is("deleted_at", null).maybeSingle();
     if (error) throw error;
     return data ? toDomain(data as PatientRow) : null;
   }
@@ -57,10 +58,7 @@ export class SupabasePatientRepository implements PatientRepository {
   }
 
   async delete(id: string): Promise<void> {
-    // Um único DELETE: as consultas saem por cascata no próprio banco (tudo ou nada).
-    // A RLS não dá erro quando a linha não é visível: confere se algo foi de fato excluído.
-    const { data, error } = await this.db().from("patients").delete().eq("id", id).select("id");
-    if (error) throw error;
-    if (!data || data.length === 0) throw new RecordNotFoundError();
+    // Um único DELETE, que o banco transforma em arquivamento do paciente e das consultas (tudo ou nada).
+    await archiveRow(this.db(), "patients", id);
   }
 }
