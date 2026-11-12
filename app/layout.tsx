@@ -9,7 +9,8 @@ const schibsted = Schibsted_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "Odontra — seu painel odontológico",
+  // Aba curta e legível: "Agenda | Odontra". A home mostra só "Odontra".
+  applicationName: "Odontra",
   description:
     "Painel para criar e acompanhar o prontuário odontológico dos seus pacientes, com odontograma interativo e geração de PDF.",
   applicationName: "Odontra",

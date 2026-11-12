@@ -2,7 +2,7 @@ import Link from "next/link";
 import { AuthShell } from "@/presentation/auth/auth-shell";
 import { SignUpForm } from "@/presentation/auth/sign-up-form";
 
-export const metadata = { title: "Criar conta — Odontra" };
+export const metadata = { title: "Criar conta" };
 
 export default function SignUpPage() {
   return (

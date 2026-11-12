@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import { AgendaView } from "@/presentation/agenda/agenda-view";
 
-export const metadata = { title: "Agenda — Odontra" };
+export const metadata = { title: "Agenda" };
 
 export default function AgendaPage() {
   // A agenda depende da data de hoje no aparelho: renderiza na visita, não no build.

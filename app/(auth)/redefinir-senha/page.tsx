@@ -1,7 +1,7 @@
 import { AuthShell } from "@/presentation/auth/auth-shell";
 import { ResetPasswordForm } from "@/presentation/auth/reset-password-form";
 
-export const metadata = { title: "Nova senha — Odontra" };
+export const metadata = { title: "Nova senha" };
 
 export default function ResetPasswordPage() {
   return (

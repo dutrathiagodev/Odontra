@@ -1,7 +1,7 @@
 import { ToothAnatomy } from "@/presentation/anatomy/tooth-anatomy";
 import { PageHeader } from "@/presentation/ui/page-header";
 
-export const metadata = { title: "Anatomia do dente — Odontra" };
+export const metadata = { title: "Anatomia" };
 
 export default function AnatomyPage() {
   return (

@@ -2,7 +2,7 @@ import Link from "next/link";
 import { AuthShell } from "@/presentation/auth/auth-shell";
 import { ForgotPasswordForm } from "@/presentation/auth/forgot-password-form";
 
-export const metadata = { title: "Recuperar senha — Odontra" };
+export const metadata = { title: "Recuperar senha" };
 
 export default function ForgotPasswordPage() {
   return (

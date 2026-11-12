@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { AuthShell } from "@/presentation/auth/auth-shell";
 import { SignInForm } from "@/presentation/auth/sign-in-form";
 
-export const metadata = { title: "Entrar — Odontra" };
+export const metadata = { title: "Entrar" };
 
 export default function SignInPage() {
   return (

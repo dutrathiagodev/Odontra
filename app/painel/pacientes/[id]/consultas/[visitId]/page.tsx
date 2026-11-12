@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import { VisitEditor } from "@/presentation/panel/visit/visit-editor";
 import { Loading } from "@/presentation/ui/loading";
 
+export const metadata = { title: "Consulta" };
+
 async function Content({ params }: PageProps<"/painel/pacientes/[id]/consultas/[visitId]">) {
   const { id, visitId } = await params;
   return <VisitEditor patientId={id} visitId={visitId} />;
