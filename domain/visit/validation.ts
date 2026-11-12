@@ -35,7 +35,7 @@ export function validateVisit(visit: Visit, today: string): FieldIssue[] {
 
   if (!visit.date) add("date", "Informe a data da consulta.");
   else if (!parseIsoDate(visit.date)) add("date", "Data inválida.");
-  else if (visit.date > today) add("date", "A data da consulta não pode ser no futuro.");
+  else if (today && visit.date > today) add("date", "A data da consulta não pode ser no futuro.");
   else if (visit.date < "1900-01-01") add("date", "Confira o ano da consulta.");
 
   tooLong("reason", visit.reason, VISIT_LIMITS.reason);

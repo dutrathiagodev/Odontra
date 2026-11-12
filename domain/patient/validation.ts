@@ -232,7 +232,10 @@ function checkLengths<T extends object>(prefix: string, value: T, limits: Partia
   }
 }
 
-/** Ordem dos campos na tela: a lista de problemas segue essa ordem (o primeiro recebe o foco). */
+/**
+ * Ordem dos campos na tela: a lista de problemas segue essa ordem (o primeiro recebe o foco).
+ * `today` vazio (ainda não se sabe a data) pula as regras que dependem de hoje.
+ */
 export function validateIdentification(value: Identification, today: string): FieldIssue[] {
   const issues: FieldIssue[] = [];
   const add = (key: keyof Identification, message: string) => issues.push({ field: `identification.${key}`, message });
@@ -240,7 +243,7 @@ export function validateIdentification(value: Identification, today: string): Fi
   const name = nameIssue(value.name, "o nome completo");
   if (name) add("name", name);
 
-  if (value.birthDate) {
+  if (value.birthDate && today) {
     const age = ageOn(value.birthDate, today);
     if (age === null) add("birthDate", "Data inválida.");
     else if (value.birthDate > today) add("birthDate", "A data de nascimento não pode ser no futuro.");

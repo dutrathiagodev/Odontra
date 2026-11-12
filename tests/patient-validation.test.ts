@@ -109,6 +109,10 @@ describe("data de nascimento", () => {
     expect(fields(patientWith({ identification: { birthDate: TODAY } }))).toEqual([]);
     expect(fields(patientWith({ identification: { birthDate: "1990-05-20" } }))).toEqual([]);
   });
+
+  it("sem a data de hoje (pré-render), não acusa data no futuro", () => {
+    expect(validatePatient(patientWith({ identification: { birthDate: "2030-01-01" } }), "")).toEqual([]);
+  });
 });
 
 describe("RG", () => {
