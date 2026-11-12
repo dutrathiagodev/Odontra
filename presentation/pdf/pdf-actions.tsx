@@ -30,26 +30,69 @@ export async function downloadRecordPdf(patient: Patient, visit: Visit): Promise
   setTimeout(() => URL.revokeObjectURL(url), 10_000);
 }
 
-/** Abre o diálogo de impressão do navegador com o mesmo PDF. */
-export async function printRecordPdf(patient: Patient, visit: Visit): Promise<void> {
-  const url = URL.createObjectURL(await buildPdfBlob(patient, visit));
+/** O PDF do prontuário como arquivo, pronto para imprimir ou compartilhar. */
+export async function buildRecordPdfFile(patient: Patient, visit: Visit): Promise<File> {
+  return new File([await buildPdfBlob(patient, visit)], fileName(patient, visit), { type: "application/pdf" });
+}
+
+/** Computador: abre o diálogo de impressão do navegador com o PDF num iframe invisível. */
+export function printPdfFile(file: File): Promise<void> {
+  const url = URL.createObjectURL(file);
   const frame = document.createElement("iframe");
   frame.style.cssText = "position:fixed;width:0;height:0;border:0;right:0;bottom:0";
   frame.src = url;
 
-  frame.onload = () => {
-    try {
-      frame.contentWindow?.focus();
-      frame.contentWindow?.print();
-    } catch {
-      // Alguns navegadores móveis bloqueiam a impressão em iframe: abre o PDF para imprimir pelo visualizador.
-      window.open(url, "_blank");
-    }
-    setTimeout(() => {
-      frame.remove();
-      URL.revokeObjectURL(url);
-    }, 60_000);
-  };
+  return new Promise((resolve) => {
+    frame.onload = () => {
+      try {
+        frame.contentWindow?.focus();
+        frame.contentWindow?.print();
+      } catch {
+        // Navegador que não imprime iframe: abre o PDF para imprimir pelo visualizador.
+        window.open(url, "_blank");
+      }
+      setTimeout(() => {
+        frame.remove();
+        URL.revokeObjectURL(url);
+      }, 60_000);
+      resolve();
+    };
+    document.body.appendChild(frame);
+  });
+}
 
-  document.body.appendChild(frame);
+/**
+ * Abre uma aba vazia na hora do toque, antes de gerar o PDF: aberta depois, o bloqueador de pop-up barraria.
+ * Devolve `null` se o navegador não deixou abrir.
+ */
+export function openPdfPlaceholderWindow(): Window | null {
+  const win = window.open("", "_blank");
+  if (!win) return null;
+  try {
+    win.document.title = "Prontuário";
+    win.document.body.style.cssText = "margin:0;display:grid;place-items:center;min-height:100vh;font:600 17px -apple-system,system-ui,sans-serif;color:#64748b;background:#f8fafc";
+    win.document.body.textContent = "Preparando o PDF…";
+  } catch {
+    // Só a mensagem de espera falhou; a aba continua valendo.
+  }
+  return win;
+}
+
+/** Mostra o PDF na aba aberta no toque. No iPhone/iPad, a impressão sai por Compartilhar → Imprimir. */
+export function showPdfInWindow(win: Window, file: File): void {
+  const url = URL.createObjectURL(file);
+  win.location.replace(url);
+  // A aba pode ficar aberta um bom tempo; o endereço do arquivo vive o suficiente para recarregar.
+  setTimeout(() => URL.revokeObjectURL(url), 10 * 60_000);
+}
+
+/** Folha de compartilhamento do sistema (tem Imprimir). Precisa ser chamada direto do toque. */
+export async function sharePdfFile(file: File): Promise<"shared" | "cancelled"> {
+  try {
+    await navigator.share({ files: [file], title: file.name });
+    return "shared";
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") return "cancelled";
+    throw error;
+  }
 }
