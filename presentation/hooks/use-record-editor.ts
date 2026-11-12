@@ -23,6 +23,7 @@ interface Options<T> {
  * Estado de uma tela de edição (paciente, consulta).
  * - Carregar nunca fica em "Carregando…" para sempre: tem tempo limite, erro e "Tentar de novo".
  * - Salvar mostra erro claro e não apaga o que foi digitado durante o salvamento.
+ * - `dirty` diz se há alterações desde o último salvamento (para avisar antes de sair da tela).
  */
 export function useRecordEditor<T>({ load, persist, mergeSaved, deps }: Options<T>) {
   const [value, setValue] = useState<T | null>(null);
@@ -31,6 +32,7 @@ export function useRecordEditor<T>({ load, persist, mergeSaved, deps }: Options<
   const [saveState, setSaveState] = useState<SaveState>("idle");
   const [saveError, setSaveError] = useState("");
   const [attempt, setAttempt] = useState(0);
+  const [dirty, setDirty] = useState(false);
   const editVersion = useRef(0);
   const current = useRef<T | null>(null);
 
@@ -41,6 +43,7 @@ export function useRecordEditor<T>({ load, persist, mergeSaved, deps }: Options<
         if (cancelled) return;
         current.current = loaded;
         setValue(loaded);
+        setDirty(false);
         setLoadState(loaded ? "ready" : "missing");
       })
       .catch((err) => {
@@ -67,6 +70,7 @@ export function useRecordEditor<T>({ load, persist, mergeSaved, deps }: Options<
       return next;
     });
     setSaveState((s) => (s === "saved" ? "idle" : s));
+    setDirty(true);
   }, []);
 
   /** Salva o estado atual. Devolve o registro salvo, ou `null` se deu erro (a mensagem fica em `saveError`). */
@@ -83,6 +87,8 @@ export function useRecordEditor<T>({ load, persist, mergeSaved, deps }: Options<
       current.current = next;
       setValue(next);
       setSaveState(changedWhileSaving ? "idle" : "saved");
+      // O que foi digitado durante o salvamento ainda não está no banco.
+      setDirty(changedWhileSaving);
       return next;
     } catch (err) {
       setSaveError(`Não foi salvo. ${friendlyError(err)} O que você digitou continua aqui.`);
@@ -91,5 +97,5 @@ export function useRecordEditor<T>({ load, persist, mergeSaved, deps }: Options<
     }
   }, [persist, mergeSaved]);
 
-  return { value, loadState, loadError, retry, edit, save, saveState, saveError };
+  return { value, loadState, loadError, retry, edit, save, saveState, saveError, dirty };
 }

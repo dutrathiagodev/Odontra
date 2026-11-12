@@ -6,6 +6,8 @@ import { arrowTarget } from "./keyboard";
 export interface TabItem<K extends string> {
   key: K;
   label: string;
+  /** Aba com campo a corrigir: ganha um ponto vermelho. */
+  alert?: boolean;
 }
 
 const tabId = (idBase: string, key: string) => `${idBase}-aba-${key}`;
@@ -54,6 +56,12 @@ export function Tabs<K extends string>({ items, active, onChange, idBase, label 
             }`}
           >
             {item.label}
+            {item.alert && (
+              <>
+                <span aria-hidden="true" className="ml-1.5 inline-block h-2 w-2 rounded-full bg-rose-500 align-middle" />
+                <span className="sr-only"> (tem campo a corrigir)</span>
+              </>
+            )}
           </button>
         );
       })}

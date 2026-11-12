@@ -1,12 +1,16 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import type { Anamnesis, Identification, Patient } from "@/domain/patient/patient";
+import { normalizePatient, validatePatient, type FieldIssue } from "@/domain/patient/validation";
 import { getPatient, savePatient, startNewPatient } from "@/infrastructure/container";
 import { formatRecordNumber } from "../../format";
+import { useLeaveGuard } from "../../hooks/use-leave-guard";
 import { useRecordEditor } from "../../hooks/use-record-editor";
+import { useToday } from "../../hooks/use-today";
 import { Avatar } from "../../ui/avatar";
+import { FormErrorsProvider, useFocusField, useFormValidation } from "../../ui/form-errors";
 import { LoadState } from "../../ui/load-state";
 import { SaveBar } from "../../ui/save-bar";
 import { TabPanel, Tabs } from "../../ui/tabs";
@@ -21,17 +25,28 @@ type TabKey = "data" | "anamnesis" | "history";
 /** O banco decide o Nº e as datas; o resto é o que está na tela. */
 const mergeSaved = (current: Patient, saved: Patient): Patient => ({ ...current, id: saved.id, number: saved.number, updatedAt: saved.updatedAt });
 
+/** Aba onde fica cada campo validado. */
+const tabOf = (field: string): TabKey => (field.startsWith("anamnesis.") ? "anamnesis" : "data");
+
+const NO_ISSUES: FieldIssue[] = [];
+
 export function PatientEditor({ patientId }: { patientId?: string }) {
   const router = useRouter();
   const [persisted, setPersisted] = useState(Boolean(patientId));
   const [tab, setTab] = useState<TabKey>("data");
   const editor = useRecordEditor<Patient>({
     load: () => (patientId ? getPatient.execute(patientId) : startNewPatient.execute()),
-    persist: (p) => savePatient.execute(p),
+    // Grava sem espaços sobrando, com máscaras padronizadas e sem respostas que deixaram de valer.
+    persist: (p) => savePatient.execute(normalizePatient(p)),
     mergeSaved,
     deps: [patientId],
   });
+  const leaveDialog = useLeaveGuard(editor.dirty);
   const { value: patient, edit } = editor;
+  const today = useToday();
+  const issues = useMemo(() => (patient ? validatePatient(patient, today) : NO_ISSUES), [patient, today]);
+  const form = useFormValidation(issues);
+  const focusField = useFocusField();
 
   if (editor.loadState !== "ready" || !patient) {
     return <LoadState state={editor.loadState === "ready" ? "loading" : editor.loadState} error={editor.loadError} missingText="Paciente não encontrado." onRetry={editor.retry} />;
@@ -40,7 +55,19 @@ export function PatientEditor({ patientId }: { patientId?: string }) {
   const editIdentification = (patch: Partial<Identification>) => edit({ identification: { ...patient.identification, ...patch } });
   const editAnamnesis = (patch: Partial<Anamnesis>) => edit({ anamnesis: { ...patient.anamnesis, ...patch } });
 
+  /** Abre a aba do campo com problema e leva o foco até ele. */
+  const review = (issue: FieldIssue | undefined = issues[0]) => {
+    if (!issue) return;
+    setTab(tabOf(issue.field));
+    focusField(issue.field);
+  };
+
   const save = async () => {
+    const firstIssue = form.submit();
+    if (firstIssue) {
+      review(firstIssue);
+      return;
+    }
     const saved = await editor.save();
     if (saved && !persisted) {
       setPersisted(true);
@@ -49,12 +76,12 @@ export function PatientEditor({ patientId }: { patientId?: string }) {
   };
 
   const tabs = [
-    { key: "data" as const, label: "Dados" },
-    { key: "anamnesis" as const, label: "Anamnese" },
+    { key: "data" as const, label: "Dados", alert: form.submitted && issues.some((i) => tabOf(i.field) === "data") },
+    { key: "anamnesis" as const, label: "Anamnese", alert: form.submitted && issues.some((i) => tabOf(i.field) === "anamnesis") },
     ...(persisted ? [{ key: "history" as const, label: "Histórico" }] : []),
   ];
 
-  const name = patient.identification.name;
+  const name = patient.identification.name.trim();
 
   return (
     <div className="space-y-4">
@@ -73,15 +100,17 @@ export function PatientEditor({ patientId }: { patientId?: string }) {
       <Tabs items={tabs} active={tab} onChange={setTab} idBase="paciente" label="Seções do paciente" />
 
       <TabPanel idBase="paciente" active={tab}>
-        {tab === "data" && (
-          <>
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
-              <PhotoField name={name} photo={patient.photo} onChange={(photo) => edit({ photo })} />
+        <FormErrorsProvider value={form.context}>
+          {tab === "data" && (
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+                <PhotoField name={name} photo={patient.photo} onChange={(photo) => edit({ photo })} />
+              </div>
+              <IdentificationSection value={patient.identification} onChange={editIdentification} today={today} />
             </div>
-            <IdentificationSection value={patient.identification} onChange={editIdentification} />
-          </>
-        )}
-        {tab === "anamnesis" && <AnamnesisSection value={patient.anamnesis} onChange={editAnamnesis} />}
+          )}
+          {tab === "anamnesis" && <AnamnesisSection value={patient.anamnesis} onChange={editAnamnesis} sex={patient.identification.sex} />}
+        </FormErrorsProvider>
         {tab === "history" && persisted && <VisitHistory patient={patient} />}
       </TabPanel>
 
@@ -91,9 +120,11 @@ export function PatientEditor({ patientId }: { patientId?: string }) {
           error={editor.saveError}
           label={persisted ? "Salvar alterações" : "Cadastrar paciente"}
           onSave={save}
-          disabled={!name.trim()}
+          issueCount={form.submitted ? issues.length : 0}
+          onReview={() => review()}
         />
       )}
+      {leaveDialog}
     </div>
   );
 }
