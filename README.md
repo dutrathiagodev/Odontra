@@ -45,7 +45,7 @@ Ficha com foto (câmera ou galeria), identificação e anamnese completa. Cada c
 
 </td>
 <td width="54%" align="center">
-  <img src="docs/assets/pacientes-mobile.jpg" alt="Lista de pacientes no celular" width="300" />
+  <img src="docs/assets/paciente-mobile.jpg" alt="Ficha do paciente no celular" width="300" />
 </td>
 </tr>
 <tr>
@@ -80,12 +80,20 @@ Prontuário em A4 no modelo clássico: identificação, anamnese, saúde bucal, 
 Mês com título grande, hoje em destaque e os horários em etiquetas coloridas dentro de cada dia, como no Calendário do iOS. No iPad, mês e dia lado a lado. Cada horário vai para o Google Agenda com um toque.
 
 </td>
-<td width="54%" valign="middle">
+<td width="54%" align="center">
+  <img src="docs/assets/agenda-mobile.jpg" alt="Agenda no celular" width="300" />
+</td>
+</tr>
+<tr>
+<td width="46%" valign="middle">
 
 ### A ficha de papel, na tela
 
 Os mesmos campos da ficha clínica impressa, com odontograma em tinta vermelha, arco com radiografias e anotações em letra de mão. Aparece na consulta (aba **Ficha**) e de forma interativa na landing.
 
+</td>
+<td width="54%" align="center">
+  <img src="docs/assets/ficha-mobile.jpg" alt="Ficha clínica de papel na consulta" width="300" />
 </td>
 </tr>
 </table>
@@ -97,9 +105,15 @@ Os mesmos campos da ficha clínica impressa, com odontograma em tinta vermelha, 
 - **Landing:** primeira tela com demonstração guiada por cursor, fotos reais de clínica, ficha interativa, dente 3D no login e atalho para tirar dúvidas no WhatsApp.
 
 <p align="center">
-  <img src="docs/assets/landing-mobile.jpg" alt="Landing no celular" width="260" />
-  &nbsp;&nbsp;
-  <img src="docs/assets/tour-mobile.jpg" alt="Tour do produto no celular" width="260" />
+  <img src="docs/assets/landing-mobile.jpg" alt="Landing no celular" width="230" />
+  &nbsp;
+  <img src="docs/assets/tour-mobile.jpg" alt="Tour do produto no celular" width="230" />
+  &nbsp;
+  <img src="docs/assets/pacientes-mobile.jpg" alt="Lista de pacientes no celular" width="230" />
+</p>
+
+<p align="center">
+  <img src="docs/assets/login-desktop.jpg" alt="Tela de login com o dente 3D" width="860" />
 </p>
 
 ## Como rodar
