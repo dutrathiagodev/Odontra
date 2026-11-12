@@ -24,7 +24,7 @@ export function PhotoField({ name, photo, onChange }: { name: string; photo: str
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <Avatar name={name || "Paciente"} photo={photo} size="h-28 w-28" />
+      <Avatar name={name || "Paciente"} photo={photo} size="h-28 w-28" awaitingUpload={!photo} />
       <div className="flex flex-wrap justify-center gap-2">
         <button type="button" onClick={() => cameraRef.current?.click()} className={pill} disabled={busy}>
           <Camera className="h-4 w-4 text-brand-600" /> {photo ? "Nova foto" : "Tirar foto"}
