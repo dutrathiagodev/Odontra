@@ -1,3 +1,4 @@
+import { ClinicPhoto } from "./clinic-photo";
 import { Reveal } from "./reveal";
 
 const PAINS = [
@@ -13,9 +14,16 @@ export function PainPoints() {
   return (
     <section className="bg-paper py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
-        <Reveal>
-          <h2 className="max-w-3xl text-3xl font-semibold leading-tight tracking-[-0.02em] text-ink sm:text-5xl">Se o seu consultório ainda é de papel, você conhece esses problemas.</h2>
-        </Reveal>
+        <div className="grid items-end gap-8 lg:grid-cols-[1fr_380px] lg:gap-12">
+          <Reveal>
+            <h2 className="max-w-3xl text-3xl font-semibold leading-tight tracking-[-0.02em] text-ink sm:text-5xl">Se o seu consultório ainda é de papel, você conhece esses problemas.</h2>
+          </Reveal>
+          <Reveal delay={120}>
+            <figure className="overflow-hidden rounded-2xl border border-line bg-white">
+              <ClinicPhoto photo="mirrorProbe" width={760} height={420} sizes="(min-width: 1024px) 380px, (min-width: 640px) 90vw, 100vw" className="aspect-[16/9] grayscale-[35%] lg:aspect-[19/12]" />
+            </figure>
+          </Reveal>
+        </div>
         <ul className="mt-10 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {PAINS.map((pain, i) => (
             <li key={pain.word}>
