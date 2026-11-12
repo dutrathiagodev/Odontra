@@ -3,6 +3,7 @@
 import { CalendarClock, ChevronRight, Search, Sparkles, Trash2, UserPlus, Users, UserRoundPlus } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, type ReactNode } from "react";
+import { cpfMatches } from "@/domain/patient/cpf";
 import { deleteErrorMessage } from "../async/delete-error";
 import { formatDate, formatRecordNumber } from "../format";
 import { usePatients } from "../hooks/use-patients";
@@ -39,7 +40,8 @@ export function PatientList() {
     return patients.filter(
       (p) =>
         p.identification.name.toLowerCase().includes(q) ||
-        (digits.length > 0 && (onlyDigits(p.identification.cpf).includes(digits) || onlyDigits(p.identification.homePhone).includes(digits))),
+        // CPF: a lista só tem a versão mascarada (o CPF inteiro fica cifrado no banco).
+        (digits.length > 0 && (cpfMatches(p.cpfMasked, digits) || onlyDigits(p.identification.homePhone).includes(digits))),
     );
   }, [patients, query]);
 
