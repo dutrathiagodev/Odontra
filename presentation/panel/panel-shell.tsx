@@ -1,6 +1,7 @@
 import { Suspense, type ReactNode } from "react";
 import { Logo } from "../ui/logo";
 import { PanelNav } from "./panel-nav";
+import { SignOutButton } from "./sign-out-button";
 
 export function PanelShell({ children }: { children: ReactNode }) {
   return (
@@ -13,14 +14,15 @@ export function PanelShell({ children }: { children: ReactNode }) {
         <Suspense fallback={null}>
           <PanelNav variant="side" />
         </Suspense>
-        <p className="mt-auto rounded-lg bg-white/5 p-3 text-xs leading-relaxed text-brand-200/70">
-          Os dados ficam salvos apenas neste dispositivo. Faça o PDF dos prontuários para guardar uma cópia.
-        </p>
+        <div className="mt-auto">
+          <SignOutButton variant="side" />
+        </div>
       </aside>
 
       <header className="sticky top-0 z-30 bg-navy-900 shadow-md shadow-navy-950/20 lg:hidden">
-        <div className="flex h-14 items-center px-4">
+        <div className="flex h-14 items-center justify-between px-4">
           <Logo href="/painel" />
+          <SignOutButton variant="header" />
         </div>
       </header>
 
