@@ -20,6 +20,8 @@ export const viewport: Viewport = {
   themeColor: "#071b3f",
   width: "device-width",
   initialScale: 1,
+  // Ocupa a tela toda no iPhone com notch; as margens seguras ficam por conta do CSS (env(safe-area-inset-*)).
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
