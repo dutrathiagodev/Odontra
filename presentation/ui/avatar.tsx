@@ -26,7 +26,7 @@ export function Avatar({ name, photo, size = "h-12 w-12", awaitingUpload = false
   }
   return (
     <span className={`${size} relative inline-block shrink-0`} role="img" aria-label={`${name}: sem foto`}>
-      <span className={`block h-full w-full overflow-hidden rounded-full ring-2 ${awaitingUpload ? "ring-dashed ring-line" : "ring-white"}`}>
+      <span className={`block h-full w-full overflow-hidden rounded-full ring-2 ${awaitingUpload ? "ring-line" : "ring-white"}`}>
         <Silhouette />
       </span>
       {awaitingUpload && (

@@ -41,10 +41,11 @@ export function AuthShell({ title, description, children, footer, mode = "signin
 
       <div className="mx-auto grid min-h-[calc(100dvh-1.5rem)] max-w-6xl overflow-hidden rounded-[28px] border border-white/15 bg-ink/75 text-white shadow-2xl shadow-black/50 backdrop-blur-xl sm:min-h-[calc(100dvh-4rem)] lg:grid-cols-2">
         <header className="flex items-center justify-between px-5 pt-5 sm:px-10 sm:pt-8 lg:col-span-2">
-          <Link href="/" className="flex items-center gap-2.5" aria-label="Odontra, página inicial">
+          <Link href="/" className="hidden items-center gap-2.5 lg:flex" aria-label="Odontra, página inicial">
             <Image src="/logo-mark.png" alt="" width={292} height={293} className="h-9 w-9" priority />
-            <Image src="/logo-wordmark.png" alt="Odontra" width={573} height={118} className="hidden h-5 w-auto sm:block" priority />
+            <Image src="/logo-wordmark.png" alt="Odontra" width={573} height={118} className="h-5 w-auto" priority />
           </Link>
+          <span className="lg:hidden" />
           <nav className="hidden items-center gap-8 text-sm text-white/70 md:flex">
             {NAV.map((item) => (
               <Link key={item.href} href={item.href} className="transition-colors hover:text-white">{item.label}</Link>
@@ -56,12 +57,24 @@ export function AuthShell({ title, description, children, footer, mode = "signin
           </div>
         </header>
 
-        <div className="relative h-56 sm:h-72 lg:h-auto">
+        <div className="relative hidden lg:block">
           <Art />
         </div>
 
-        <main className="flex items-center justify-center px-5 pb-10 sm:px-10 lg:py-10">
-          <div className="w-full max-w-sm">
+        <main className="relative flex items-center justify-center overflow-hidden px-5 pb-10 pt-4 sm:px-10 lg:py-10">
+          {/* Celular: dente grande e translúcido ao fundo, logo em destaque. */}
+          <div className="pointer-events-none absolute inset-0 grid place-items-center lg:hidden" aria-hidden>
+            {AUTH_ART.image ? (
+              <img src={AUTH_ART.image} alt="" className="h-full w-full object-cover opacity-15" />
+            ) : (
+              <BigTooth className="h-[34rem] -rotate-12 opacity-[0.09]" />
+            )}
+          </div>
+          <div className="relative w-full max-w-sm">
+            <Link href="/" className="mb-8 flex flex-col items-center gap-3 lg:hidden" aria-label="Odontra, página inicial">
+              <Image src="/logo-mark.png" alt="" width={292} height={293} className="h-20 w-20" priority />
+              <Image src="/logo-wordmark.png" alt="Odontra" width={573} height={118} className="h-8 w-auto" priority />
+            </Link>
             <h1 className="text-center text-[1.9rem] font-semibold leading-tight tracking-tight">{title}</h1>
             {description && <p className="mt-2 text-center text-[0.95rem] leading-relaxed text-white/65">{description}</p>}
             <div className="mt-8">{children}</div>
