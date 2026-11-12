@@ -4,6 +4,7 @@ import { Hero } from "@/presentation/landing/hero";
 import { LandingFooter } from "@/presentation/landing/landing-footer";
 import { LandingHeader } from "@/presentation/landing/landing-header";
 import { MobileTabBar } from "@/presentation/landing/mobile-tab-bar";
+import { PaperCardSection } from "@/presentation/landing/paper-card-section";
 import { PainPoints } from "@/presentation/landing/pain-points";
 import { ProductTour } from "@/presentation/landing/product-tour";
 import { QrSection } from "@/presentation/landing/qr-section";
@@ -19,6 +20,7 @@ export default function Home() {
         <PainPoints />
         <FlowSection />
         <ProductTour />
+        <PaperCardSection />
         <AnatomySection />
         <QrSection />
       </main>
