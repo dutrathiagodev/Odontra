@@ -13,7 +13,7 @@ import { Avatar } from "../../ui/avatar";
 import { FormErrorsProvider, useFocusField, useFormValidation } from "../../ui/form-errors";
 import { LoadState } from "../../ui/load-state";
 import { SaveBar } from "../../ui/save-bar";
-import { Tabs } from "../../ui/tabs";
+import { TabPanel, Tabs } from "../../ui/tabs";
 import { AnamnesisSection } from "./anamnesis-section";
 import { HealthAlerts } from "./health-alerts";
 import { IdentificationSection } from "./identification-section";
@@ -97,20 +97,22 @@ export function PatientEditor({ patientId }: { patientId?: string }) {
 
       {persisted && <HealthAlerts anamnesis={patient.anamnesis} />}
 
-      <Tabs items={tabs} active={tab} onChange={setTab} />
+      <Tabs items={tabs} active={tab} onChange={setTab} idBase="paciente" label="Seções do paciente" />
 
-      <FormErrorsProvider value={form.context}>
-        {tab === "data" && (
-          <div className="space-y-4">
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
-              <PhotoField name={name} photo={patient.photo} onChange={(photo) => edit({ photo })} />
+      <TabPanel idBase="paciente" active={tab}>
+        <FormErrorsProvider value={form.context}>
+          {tab === "data" && (
+            <div className="space-y-4">
+              <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+                <PhotoField name={name} photo={patient.photo} onChange={(photo) => edit({ photo })} />
+              </div>
+              <IdentificationSection value={patient.identification} onChange={editIdentification} today={today} />
             </div>
-            <IdentificationSection value={patient.identification} onChange={editIdentification} today={today} />
-          </div>
-        )}
-        {tab === "anamnesis" && <AnamnesisSection value={patient.anamnesis} onChange={editAnamnesis} sex={patient.identification.sex} />}
-      </FormErrorsProvider>
-      {tab === "history" && persisted && <VisitHistory patient={patient} />}
+          )}
+          {tab === "anamnesis" && <AnamnesisSection value={patient.anamnesis} onChange={editAnamnesis} sex={patient.identification.sex} />}
+        </FormErrorsProvider>
+        {tab === "history" && persisted && <VisitHistory patient={patient} />}
+      </TabPanel>
 
       {tab !== "history" && (
         <SaveBar

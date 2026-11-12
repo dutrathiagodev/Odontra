@@ -38,6 +38,10 @@ export function SaveBar({ state, error, label, onSave, disabled, issueCount = 0,
           {error}
         </p>
       )}
+      {/* Leitor de tela ouve "Salvando…" e "Salvo" sem precisar procurar o botão. */}
+      <p aria-live="polite" className="sr-only">
+        {state === "saving" ? "Salvando…" : state === "saved" ? "Salvo." : ""}
+      </p>
       <Button onClick={onSave} disabled={disabled || state === "saving"} className="w-full sm:w-auto">
         {state === "saving" ? <Loader2 className="h-4 w-4 animate-spin" /> : state === "saved" ? <Check className="h-4 w-4" /> : <Save className="h-4 w-4" />}
         {state === "saving" ? "Salvando…" : state === "saved" ? "Salvo" : state === "error" ? "Tentar salvar de novo" : label}
