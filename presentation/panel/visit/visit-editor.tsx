@@ -10,10 +10,12 @@ import type { FieldIssue } from "@/domain/patient/validation";
 import { normalizeVisit, validateVisit } from "@/domain/visit/validation";
 import { getPatient, getVisit, saveVisit, startNewVisit } from "@/infrastructure/container";
 import { formatRecordNumber } from "../../format";
+import { useLeaveGuard } from "../../hooks/use-leave-guard";
 import { useRecordEditor } from "../../hooks/use-record-editor";
 import { useToday } from "../../hooks/use-today";
 import { OdontogramChart } from "../../odontogram/odontogram-chart";
-import { downloadRecordPdf, printRecordPdf } from "../../pdf/pdf-actions";
+import { downloadRecordPdf } from "../../pdf/pdf-actions";
+import { usePrintRecord } from "../../pdf/use-print-record";
 import { PaperRecordCard } from "../../record-card/paper-record-card";
 import { toPaperRecord } from "../../record-card/to-paper-record";
 import { Button } from "../../ui/button";
@@ -69,6 +71,7 @@ export function VisitEditor({ patientId, visitId }: { patientId: string; visitId
   const [tab, setTab] = useState<TabKey>("visit");
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState("");
+  const printer = usePrintRecord();
 
   const editor = useRecordEditor<Loaded>({
     load: () => loadVisit(patientId, visitId),
@@ -82,6 +85,7 @@ export function VisitEditor({ patientId, visitId }: { patientId: string; visitId
   const form = useFormValidation(issues);
   const focusField = useFocusField();
 
+  const leaveDialog = useLeaveGuard(editor.dirty);
   if (editor.loadState !== "ready" || !editor.value) {
     return <LoadState state={editor.loadState === "ready" ? "loading" : editor.loadState} error={editor.loadError} missingText="Consulta não encontrada." onRetry={editor.retry} />;
   }
@@ -125,6 +129,15 @@ export function VisitEditor({ patientId, visitId }: { patientId: string; visitId
     }
   };
 
+  // Imprimir abre a aba do PDF já no toque (iPhone/iPad) e só depois salva e gera o arquivo.
+  const printNow = () => {
+    setExportError("");
+    printer.print(async () => {
+      const saved = await save();
+      return saved && { patient: saved.patient, visit: saved.visit };
+    });
+  };
+
   return (
     <div className="space-y-4">
       <Link href={`/painel/pacientes/${patientId}`} className="inline-flex min-h-10 items-center gap-1.5 text-sm font-bold text-brand-700">
@@ -137,13 +150,14 @@ export function VisitEditor({ patientId, visitId }: { patientId: string; visitId
       </div>
 
       <HealthAlerts anamnesis={patient.anamnesis} />
+      {leaveDialog}
       {exportError && <p role="alert" className="rounded-lg bg-rose-50 px-3 py-2 text-sm font-medium text-rose-700 ring-1 ring-rose-200">{exportError}</p>}
 
       <div className="grid grid-cols-2 gap-2">
-        <Button variant="secondary" disabled={exporting} onClick={() => exportWith(downloadRecordPdf)}>
+        <Button variant="secondary" disabled={exporting || printer.busy} onClick={() => exportWith(downloadRecordPdf)}>
           <FileDown className="h-4 w-4" /> Gerar PDF
         </Button>
-        <Button variant="secondary" disabled={exporting} onClick={() => exportWith(printRecordPdf)}>
+        <Button variant="secondary" disabled={exporting || printer.busy} onClick={printNow}>
           <Printer className="h-4 w-4" /> Imprimir
         </Button>
       </div>

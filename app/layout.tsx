@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Schibsted_Grotesk } from "next/font/google";
+import { connection } from "next/server";
 import "./globals.css";
 
 // Grotesca editorial, com personalidade e boa leitura em telas pequenas.
@@ -25,7 +26,17 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+/**
+ * CSP com nonce (proxy.ts): o Next só coloca o nonce nos scripts quando gera o HTML com a requisição
+ * em mãos. Uma página ou "casca estática" pré-gerada no build sairia com scripts sem nonce, que o
+ * navegador bloquearia (a página nem hidrataria). Por isso o layout raiz espera a requisição antes de
+ * renderizar: todas as rotas passam a ser geradas por requisição (ƒ no build), sem casca estática.
+ * `instant = false` avisa o Cache Components que esse bloqueio é intencional.
+ */
+export const instant = false;
+
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  await connection();
   return (
     <html lang="pt-BR" className={`${schibsted.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}</body>

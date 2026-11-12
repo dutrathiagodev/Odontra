@@ -2,6 +2,7 @@
 
 import { Eye, EyeOff } from "lucide-react";
 import { useId, useState } from "react";
+import { useFormStatus } from "react-dom";
 
 interface AuthFieldProps {
   label: string;
@@ -49,10 +50,16 @@ export function FormMessage({ tone, children }: { tone: "error" | "success"; chi
   );
 }
 
-export function SubmitButton({ busy, children }: { busy: boolean; children: React.ReactNode }) {
+export function SubmitButton({ busy, disabled = false, children }: { busy: boolean; disabled?: boolean; children: React.ReactNode }) {
   return (
-    <button type="submit" disabled={busy} className="h-12 w-full rounded-lg bg-white text-base font-semibold text-ink transition-colors hover:bg-[#dfe7f3] disabled:opacity-60">
+    <button type="submit" disabled={busy || disabled} className="h-12 w-full rounded-lg bg-white text-base font-semibold text-ink transition-colors hover:bg-[#dfe7f3] disabled:opacity-60">
       {busy ? "Aguarde…" : children}
     </button>
   );
+}
+
+/** Botão de formulário com Server Action: fica em "Aguarde…" enquanto o envio está em andamento. */
+export function ActionSubmitButton({ children }: { children: React.ReactNode }) {
+  const { pending } = useFormStatus();
+  return <SubmitButton busy={pending}>{children}</SubmitButton>;
 }

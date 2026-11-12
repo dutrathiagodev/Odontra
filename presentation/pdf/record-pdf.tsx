@@ -3,6 +3,7 @@ import { Circle, Document, G, Image, Line, Page, Path, Rect, StyleSheet, Svg, Te
 import { CLINICAL_OPTIONS } from "@/domain/visit/clinical-options";
 import type { ReactNode } from "react";
 import { DISEASE_CATEGORIES, type Patient } from "@/domain/patient/patient";
+import { croLabel } from "@/domain/profile/profile";
 import { LOWER_TEETH, TOOTH_CONDITION_LABELS, UPPER_TEETH, type ToothCondition } from "@/domain/tooth";
 import type { Visit } from "@/domain/visit/visit";
 import { formatDate, formatLongDate, formatRecordNumber } from "../format";
@@ -40,8 +41,11 @@ const s = StyleSheet.create({
   value: { fontSize: 8, color: PEN, marginLeft: 3 },
   mark: { width: 7, height: 7, borderWidth: 0.7, borderColor: "#4b5567", alignItems: "center", justifyContent: "center", marginLeft: 5, marginRight: 2.5 },
   dot: { width: 3.6, height: 3.6, backgroundColor: PEN },
-  sign: { marginTop: 18, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-end" },
+  sign: { marginTop: 18, flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start" },
+  signBlock: { width: 210, alignItems: "center" },
   signLine: { width: 210, borderTopWidth: 0.7, borderTopColor: "#334155", paddingTop: 3, textAlign: "center", fontSize: 6.3, textTransform: "uppercase" },
+  signName: { fontFamily: "Helvetica-Bold", fontSize: 8, color: ACCENT, textAlign: "center", marginTop: 3 },
+  signCro: { fontSize: 7, color: "#5b6b84", textAlign: "center", marginTop: 1 },
   footer: { position: "absolute", bottom: 14, left: 26, right: 26, flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   footerText: { fontSize: 6.3, color: "#7a889e" },
 });
@@ -226,6 +230,8 @@ export function RecordPdf({ patient, visit, logoSrc, qrDataUrl, siteUrl }: Recor
   const oh = visit.oralHealth;
   const ex = visit.clinicalExam;
   const number = formatRecordNumber(patient.number);
+  const dentistName = visit.dentist.name.trim();
+  const dentistCro = croLabel(visit.dentist.cro);
 
   const toothNotes = [...UPPER_TEETH, ...LOWER_TEETH]
     .filter((t) => visit.odontogram[t])
@@ -245,15 +251,15 @@ export function RecordPdf({ patient, visit, logoSrc, qrDataUrl, siteUrl }: Recor
   );
 
   return (
-    <Document title={`Prontuário ${number} - ${id.name}`} author={visit.dentist.name || "Odontra"}>
+    <Document title={`Prontuário ${number} - ${id.name}`} author={dentistName || "Odontra"}>
       {/* Página 1: identificação e anamnese */}
       <Page size="A4" style={s.page}>
         <View style={s.header}>
           <View style={s.brand}>
             <View style={s.seal}>{logoSrc ? <Image src={logoSrc} style={{ width: 24, height: 24 }} /> : null}</View>
             <View>
-              <Text style={s.dentist}>{visit.dentist.name || "Cirurgião-dentista"}</Text>
-              <Text style={s.dentistSub}>Cirurgião-dentista{visit.dentist.cro ? `, CRO ${visit.dentist.cro}` : ""}</Text>
+              <Text style={s.dentist}>{dentistName || "Cirurgião-dentista"}</Text>
+              <Text style={s.dentistSub}>Cirurgião-dentista{dentistCro ? `, ${dentistCro}` : ""}</Text>
             </View>
           </View>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -388,7 +394,13 @@ export function RecordPdf({ patient, visit, logoSrc, qrDataUrl, siteUrl }: Recor
             <Text style={[s.value, { marginLeft: 0, fontSize: 8.5 }]}>{formatLongDate(visit.date)}</Text>
             <Text style={[s.label, { borderTopWidth: 0.7, borderTopColor: "#334155", paddingTop: 2, width: 170 }]}>Data</Text>
           </View>
-          <Text style={s.signLine}>Assinatura e carimbo cirurgião-dentista</Text>
+          <View style={s.signBlock}>
+            {/* Espaço do mesmo tamanho da data, para as duas linhas ficarem na mesma altura. */}
+            <Text style={[s.value, { marginLeft: 0, fontSize: 8.5 }]}> </Text>
+            <Text style={s.signLine}>Assinatura e carimbo cirurgião-dentista</Text>
+            {dentistName ? <Text style={s.signName}>{dentistName}</Text> : null}
+            {dentistCro ? <Text style={s.signCro}>{dentistCro}</Text> : null}
+          </View>
         </View>
         {footer}
       </Page>

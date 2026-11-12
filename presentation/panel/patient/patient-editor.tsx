@@ -6,6 +6,7 @@ import type { Anamnesis, Identification, Patient } from "@/domain/patient/patien
 import { normalizePatient, validatePatient, type FieldIssue } from "@/domain/patient/validation";
 import { getPatient, savePatient, startNewPatient } from "@/infrastructure/container";
 import { formatRecordNumber } from "../../format";
+import { useLeaveGuard } from "../../hooks/use-leave-guard";
 import { useRecordEditor } from "../../hooks/use-record-editor";
 import { useToday } from "../../hooks/use-today";
 import { Avatar } from "../../ui/avatar";
@@ -40,6 +41,7 @@ export function PatientEditor({ patientId }: { patientId?: string }) {
     mergeSaved,
     deps: [patientId],
   });
+  const leaveDialog = useLeaveGuard(editor.dirty);
   const { value: patient, edit } = editor;
   const today = useToday();
   const issues = useMemo(() => (patient ? validatePatient(patient, today) : NO_ISSUES), [patient, today]);
@@ -120,6 +122,7 @@ export function PatientEditor({ patientId }: { patientId?: string }) {
           onReview={() => review()}
         />
       )}
+      {leaveDialog}
     </div>
   );
 }
