@@ -3,7 +3,6 @@
 import { Clock3, FileDown, History, MousePointerClick, Table2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Reveal } from "./reveal";
-import { Sparkle } from "./illustrations";
 import { ChartScene } from "./tour/chart-scene";
 import { HistoryScene } from "./tour/history-scene";
 import { PdfScene } from "./tour/pdf-scene";
@@ -40,16 +39,11 @@ export function ProductTour() {
   };
 
   return (
-    <section id="tour" className="relative overflow-hidden bg-[linear-gradient(135deg,#b9c8f5_0%,#dcdff8_45%,#e8d8f3_100%)] py-16 sm:py-24">
-      <div className="animate-float-slow pointer-events-none absolute -left-24 top-10 h-80 w-80 rounded-full bg-brand-400/30 blur-3xl" />
-      <div className="animate-float-slow pointer-events-none absolute -right-24 bottom-0 h-96 w-96 rounded-full bg-fuchsia-300/30 blur-3xl [animation-delay:-5s]" />
+    <section id="tour" className="relative overflow-hidden bg-enamel py-16 sm:py-24">
 
       <div className="relative mx-auto max-w-7xl px-5 sm:px-8">
         <Reveal>
-          <p className="flex items-center gap-2 text-sm font-semibold text-navy-800">
-            <Sparkle className="h-4 w-4 text-brand-600" /> Como funciona
-          </p>
-          <h2 className="mt-3 max-w-2xl text-3xl font-extrabold leading-tight tracking-tight text-navy-900 sm:text-5xl">Do primeiro toque ao PDF, sem papel</h2>
+          <h2 className="max-w-2xl text-3xl font-semibold leading-tight tracking-[-0.02em] text-ink sm:text-5xl">Do primeiro toque ao PDF, sem papel.</h2>
         </Reveal>
 
         <div className="mt-10 grid items-start gap-8 lg:grid-cols-[0.8fr_1.4fr]">

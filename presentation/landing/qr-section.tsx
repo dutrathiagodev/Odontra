@@ -7,13 +7,10 @@ export function QrSection() {
   const { dataUrl, url } = useSiteQrCode(320);
 
   return (
-    <section id="celular" className="bg-white pb-20 pt-4">
+    <section id="celular" className="bg-paper py-16 sm:py-20">
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-5 sm:px-8 md:grid-cols-[1fr_auto]">
         <div>
-          <p className="text-xs font-bold uppercase tracking-[0.2em] text-brand-600">No celular</p>
-          <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-navy-900 sm:text-4xl">
-            Aponte a câmera e abra o <span className="text-brand-600">Odontra</span>
-          </h2>
+          <h2 className="text-3xl font-semibold tracking-[-0.02em] text-ink sm:text-4xl">Aponte a câmera e abra o Odontra no celular.</h2>
           <p className="mt-3 max-w-lg text-slate-600">
             Leia o QR code para abrir o painel no seu celular. Depois, adicione à tela inicial e use como um aplicativo. O mesmo QR code vai no rodapé de cada PDF gerado.
           </p>
