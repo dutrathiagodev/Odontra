@@ -2,36 +2,30 @@
 
 import { FileDown, Plus, Printer, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import type { Patient } from "@/domain/patient/patient";
 import type { Visit } from "@/domain/visit/visit";
 import { deleteVisit, listVisits } from "@/infrastructure/container";
+import { withTimeout } from "../../async/with-timeout";
 import { formatDate } from "../../format";
+import { useAsync } from "../../hooks/use-async";
 import { downloadRecordPdf, printRecordPdf } from "../../pdf/pdf-actions";
 import { Button, linkButtonClass } from "../../ui/button";
 import { useConfirm } from "../../ui/confirm-dialog";
 
 export function VisitHistory({ patient }: { patient: Patient }) {
-  const [visits, setVisits] = useState<Visit[] | null>(null);
+  const { state, reload, retry } = useAsync(() => listVisits.execute(patient.id), [patient.id]);
+  const visits = state.status === "ready" ? state.data : null;
   const [busyId, setBusyId] = useState<string | null>(null);
-
-  const [version, setVersion] = useState(0);
-  const refresh = useCallback(() => setVersion((v) => v + 1), []);
-
-  useEffect(() => {
-    let cancelled = false;
-    void listVisits.execute(patient.id).then((list) => {
-      if (!cancelled) setVisits(list);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [patient.id, version]);
+  const [actionError, setActionError] = useState("");
 
   const run = async (visit: Visit, action: (p: Patient, v: Visit) => Promise<void>) => {
     setBusyId(visit.id);
+    setActionError("");
     try {
       await action(patient, visit);
+    } catch {
+      setActionError("Não foi possível gerar o PDF agora. Tente de novo.");
     } finally {
       setBusyId(null);
     }
@@ -46,8 +40,13 @@ export function VisitHistory({ patient }: { patient: Patient }) {
       confirmLabel: "Excluir consulta",
     });
     if (!ok) return;
-    await deleteVisit.execute(visit.id);
-    refresh();
+    setActionError("");
+    try {
+      await withTimeout(deleteVisit.execute(visit.id));
+      reload();
+    } catch {
+      setActionError("Não foi possível excluir a consulta agora. Tente de novo.");
+    }
   };
 
   return (
@@ -57,7 +56,14 @@ export function VisitHistory({ patient }: { patient: Patient }) {
         <Plus className="h-4 w-4" /> Nova consulta
       </Link>
 
-      {visits === null ? (
+      {actionError && <p role="alert" className="rounded-lg bg-rose-50 px-3 py-2 text-sm font-medium text-rose-700 ring-1 ring-rose-200">{actionError}</p>}
+      {state.status === "error" ? (
+        <div role="alert" className="rounded-2xl bg-rose-50 p-5 text-center text-sm text-rose-800 ring-1 ring-rose-200">
+          <p className="font-semibold">Não deu para carregar o histórico.</p>
+          <p className="mt-1">{state.message}</p>
+          <Button variant="secondary" onClick={retry} className="mt-3">Tentar de novo</Button>
+        </div>
+      ) : visits === null ? (
         <p className="py-8 text-center text-slate-400">Carregando…</p>
       ) : visits.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-brand-200 bg-white p-6 text-center text-sm text-slate-500">

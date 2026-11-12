@@ -23,7 +23,8 @@ function Stat({ icon, label, value }: { icon: ReactNode; label: string; value: n
 }
 
 export function PatientList() {
-  const { patients, remove, loadDemo } = usePatients();
+  const { patients, error, retry, remove, loadDemo } = usePatients();
+  const [actionError, setActionError] = useState("");
   const [loadingDemo, setLoadingDemo] = useState(false);
   const [query, setQuery] = useState("");
 
@@ -31,7 +32,13 @@ export function PatientList() {
     const q = query.trim().toLowerCase();
     if (!patients) return [];
     if (!q) return patients;
-    return patients.filter((p) => p.identification.name.toLowerCase().includes(q) || p.identification.cpf.includes(q) || p.identification.homePhone.includes(q));
+    const digits = q.replace(/\D/g, "");
+    const onlyDigits = (v: string) => v.replace(/\D/g, "");
+    return patients.filter(
+      (p) =>
+        p.identification.name.toLowerCase().includes(q) ||
+        (digits.length > 0 && (onlyDigits(p.identification.cpf).includes(digits) || onlyDigits(p.identification.homePhone).includes(digits))),
+    );
   }, [patients, query]);
 
   const stats = useMemo(() => {
@@ -54,7 +61,13 @@ export function PatientList() {
       description: "A ficha, a foto e todo o histórico de consultas serão apagados. Essa ação não pode ser desfeita.",
       confirmLabel: "Excluir paciente",
     });
-    if (ok) void remove(id);
+    if (!ok) return;
+    setActionError("");
+    try {
+      await remove(id);
+    } catch {
+      setActionError("Não foi possível excluir agora. Verifique a conexão e tente de novo.");
+    }
   };
 
   return (
@@ -90,8 +103,19 @@ export function PatientList() {
           </label>
         </div>
 
+        {actionError && (
+          <p role="alert" className="border-b border-rose-200 bg-rose-50 px-4 py-3 text-sm font-medium text-rose-700">{actionError}</p>
+        )}
         {patients === null ? (
-          <p className="p-10 text-center text-slate-400">Carregando…</p>
+          error ? (
+            <div role="alert" className="p-10 text-center">
+              <p className="font-bold text-navy-900">Não deu para carregar os pacientes.</p>
+              <p className="mt-1 text-sm text-slate-500">{error}</p>
+              <button type="button" onClick={retry} className={`${linkButtonClass("secondary")} mt-4`}>Tentar de novo</button>
+            </div>
+          ) : (
+            <p className="p-10 text-center text-slate-400">Carregando…</p>
+          )
         ) : filtered.length === 0 ? (
           <div className="p-10 text-center">
             <p className="font-bold text-navy-900">{patients.length === 0 ? "Nenhum paciente cadastrado" : "Nenhum resultado"}</p>
@@ -106,8 +130,11 @@ export function PatientList() {
                   disabled={loadingDemo}
                   onClick={async () => {
                     setLoadingDemo(true);
+                    setActionError("");
                     try {
                       await loadDemo();
+                    } catch {
+                      setActionError("Não foi possível carregar os exemplos agora. Tente de novo.");
                     } finally {
                       setLoadingDemo(false);
                     }
