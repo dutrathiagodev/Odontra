@@ -149,6 +149,7 @@ Abra `http://localhost:3000` e entre com a conta de teste local `dentista@odontr
 | `NEXT_PUBLIC_SUPABASE_URL` | navegador | Endereço do projeto Supabase |
 | `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` | navegador | Chave publicável (a proteção dos dados é a RLS) |
 | `NEXT_PUBLIC_SITE_URL` | navegador | Endereço público: QR code, links dos e-mails |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | navegador | Chave do site do Cloudflare Turnstile (captcha no login, cadastro e Esqueci minha senha). Vazia = sem captcha. A chave secreta fica no Supabase (Authentication > Attack Protection) |
 | `RESEND_API_KEY` | só servidor | Envio do e-mail de boas-vindas |
 | `EMAIL_FROM` | só servidor | Remetente dos e-mails |
 
