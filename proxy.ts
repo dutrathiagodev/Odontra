@@ -9,7 +9,13 @@ const AUTH_PAGES = ["/entrar", "/cadastro", "/recuperar-senha"];
  * A autorização real dos dados continua na RLS do banco; isto só evita mostrar o painel a quem não entrou.
  */
 export async function proxy(request: NextRequest) {
-  if (!isSupabaseConfigured) return NextResponse.next();
+  if (!isSupabaseConfigured) {
+    // Em produção o painel nunca abre sem o banco (não cai em armazenamento local).
+    if (process.env.NODE_ENV === "production" && request.nextUrl.pathname.startsWith("/painel")) {
+      return NextResponse.redirect(new URL("/entrar", request.url));
+    }
+    return NextResponse.next();
+  }
 
   let response = NextResponse.next({ request });
   const supabase = createServerClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
@@ -23,8 +29,11 @@ export async function proxy(request: NextRequest) {
     },
   });
 
-  const { data } = await supabase.auth.getClaims();
-  const signedIn = Boolean(data?.claims?.sub);
+  // Falha de rede ao validar a sessão conta como "não entrou": nunca derruba a página.
+  const signedIn = await supabase.auth
+    .getClaims()
+    .then(({ data }) => Boolean(data?.claims?.sub))
+    .catch(() => false);
   const { pathname, search } = request.nextUrl;
 
   if (!signedIn && pathname.startsWith("/painel")) {
