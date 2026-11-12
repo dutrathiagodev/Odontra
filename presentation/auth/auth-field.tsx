@@ -49,9 +49,9 @@ export function FormMessage({ tone, children }: { tone: "error" | "success"; chi
   );
 }
 
-export function SubmitButton({ busy, children }: { busy: boolean; children: React.ReactNode }) {
+export function SubmitButton({ busy, disabled = false, children }: { busy: boolean; disabled?: boolean; children: React.ReactNode }) {
   return (
-    <button type="submit" disabled={busy} className="h-12 w-full rounded-lg bg-white text-base font-semibold text-ink transition-colors hover:bg-[#dfe7f3] disabled:opacity-60">
+    <button type="submit" disabled={busy || disabled} className="h-12 w-full rounded-lg bg-white text-base font-semibold text-ink transition-colors hover:bg-[#dfe7f3] disabled:opacity-60">
       {busy ? "Aguarde…" : children}
     </button>
   );
