@@ -1,8 +1,9 @@
 /**
- * Arte da tela de login. Coloque os arquivos gerados no Gemini em `public/auth/`
- * e preencha os caminhos abaixo. Vazio = usa o dente vetorial animado.
+ * Arte da tela de login: o dente girando 360° parado, sem fundo (WebP animado com transparência).
+ * Recortado do vídeo gerado no Gemini; toca sozinho no iPhone, iPad, Android e desktop, sem JavaScript.
  */
 export const AUTH_ART = {
-  video: "", // ex.: "/auth/dente.mp4" (loop curto, sem som)
-  image: "", // ex.: "/auth/dente.webp" (também vira o poster do vídeo e o fundo desfocado)
+  tooth: "/auth/dente-360.webp",
+  /** Primeiro quadro, para quem prefere menos movimento. */
+  poster: "/auth/dente-poster.webp",
 };

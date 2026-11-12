@@ -1,8 +1,7 @@
-/* eslint-disable @next/next/no-img-element */
+ 
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { BigTooth } from "../landing/illustrations";
 import { AUTH_ART } from "./auth-art";
 
 const NAV = [
@@ -11,15 +10,26 @@ const NAV = [
   { href: "/#anatomia", label: "Anatomia" },
 ];
 
+/** Dente sem fundo girando em loop; parado para quem prefere menos movimento. */
+function SpinningTooth({ className }: { className: string }) {
+  return (
+    <picture>
+      <source srcSet={AUTH_ART.poster} media="(prefers-reduced-motion: reduce)" />
+      <img src={AUTH_ART.tooth} alt="" width={390} height={440} decoding="async" fetchPriority="high" className={className} />
+    </picture>
+  );
+}
+
 function Art() {
-  if (AUTH_ART.video) {
-    return <video src={AUTH_ART.video} poster={AUTH_ART.image || undefined} autoPlay muted loop playsInline className="h-full w-full object-cover" />;
-  }
-  if (AUTH_ART.image) return <img src={AUTH_ART.image} alt="" className="h-full w-full object-cover" />;
   return (
     <div className="relative grid h-full w-full place-items-center">
-      <div className="absolute h-64 w-64 rounded-full bg-accent/35 blur-3xl" />
-      <BigTooth hatched style={{ "--r": "-6deg" } as React.CSSProperties} className="animate-float-tooth relative h-72 drop-shadow-[0_20px_40px_rgba(35,87,217,0.45)] sm:h-96" />
+      {/* Brilho azul atrás do dente, sem caixa nem fundo. */}
+      <div className="absolute h-72 w-72 rounded-full bg-accent/30 blur-3xl" />
+      <SpinningTooth className="relative h-auto w-[min(78%,360px)] drop-shadow-[0_30px_40px_rgba(0,0,0,0.45)]" />
+      <div className="absolute inset-x-8 bottom-8 text-center">
+        <p className="text-lg font-semibold leading-snug">Cada dente, do jeito que você examina.</p>
+        <p className="mt-1 text-sm text-white/65">Odontograma, ficha e PDF no mesmo lugar.</p>
+      </div>
     </div>
   );
 }
@@ -32,14 +42,10 @@ export function AuthShell({ title, description, children, footer, mode = "signin
   return (
     <div className="relative isolate min-h-dvh overflow-hidden bg-[#06101f] px-3 py-3 sm:px-6 sm:py-8">
       <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
-        {AUTH_ART.image ? (
-          <img src={AUTH_ART.image} alt="" className="h-full w-full scale-125 object-cover opacity-40 blur-2xl" />
-        ) : (
-          <div className="h-full w-full bg-[radial-gradient(60%_50%_at_25%_40%,rgba(35,87,217,0.35),transparent_70%)]" />
-        )}
+        <div className="h-full w-full bg-[radial-gradient(60%_50%_at_25%_40%,rgba(35,87,217,0.35),transparent_70%)]" />
       </div>
 
-      <div className="mx-auto grid min-h-[calc(100dvh-1.5rem)] max-w-6xl overflow-hidden rounded-[28px] border border-white/15 bg-ink/75 text-white shadow-2xl shadow-black/50 backdrop-blur-xl sm:min-h-[calc(100dvh-4rem)] lg:grid-cols-2">
+      <div className="mx-auto grid min-h-[calc(100dvh-1.5rem)] max-w-6xl overflow-hidden rounded-[28px] border border-white/15 bg-ink/90 text-white shadow-2xl shadow-black/50 sm:min-h-[calc(100dvh-4rem)] lg:grid-cols-2">
         <header className="flex items-center justify-between px-5 pt-5 sm:px-10 sm:pt-8 lg:col-span-2">
           <Link href="/" className="hidden items-center gap-2.5 lg:flex" aria-label="Odontra, página inicial">
             <Image src="/logo-mark.png" alt="" width={292} height={293} className="h-9 w-9" priority />
@@ -64,11 +70,7 @@ export function AuthShell({ title, description, children, footer, mode = "signin
         <main className="relative flex items-center justify-center overflow-hidden px-5 pb-10 pt-4 sm:px-10 lg:py-10">
           {/* Celular: dente grande e translúcido ao fundo, logo em destaque. */}
           <div className="pointer-events-none absolute inset-0 grid place-items-center lg:hidden" aria-hidden>
-            {AUTH_ART.image ? (
-              <img src={AUTH_ART.image} alt="" className="h-full w-full object-cover opacity-15" />
-            ) : (
-              <BigTooth hatched className="h-[30rem] -rotate-6 opacity-[0.12]" />
-            )}
+            <SpinningTooth className="absolute top-6 h-auto w-56 opacity-25 drop-shadow-[0_20px_30px_rgba(0,0,0,0.5)]" />
           </div>
           <div className="relative w-full max-w-sm">
             <Link href="/" className="mb-8 flex flex-col items-center gap-3 lg:hidden" aria-label="Odontra, página inicial">
