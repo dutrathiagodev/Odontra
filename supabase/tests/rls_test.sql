@@ -9,7 +9,7 @@ VALUES
   ('11111111-1111-1111-1111-111111111111', 'a@teste.dev', '{"full_name":"Dra. A"}', 'authenticated', 'authenticated'),
   ('22222222-2222-2222-2222-222222222222', 'b@teste.dev', '{"full_name":"Dr. B"}', 'authenticated', 'authenticated');
 
-SELECT is((SELECT count(*) FROM public.profiles)::int, 2, 'trigger cria um perfil por usuario');
+SELECT is((SELECT count(*) FROM public.profiles WHERE id IN ('11111111-1111-1111-1111-111111111111', '22222222-2222-2222-2222-222222222222'))::int, 2, 'trigger cria um perfil por usuario');
 SELECT is((SELECT full_name FROM public.profiles WHERE id = '11111111-1111-1111-1111-111111111111'), 'Dra. A', 'perfil recebe o nome do cadastro');
 
 -- Dentista A cria paciente e consulta.
