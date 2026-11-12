@@ -6,6 +6,7 @@ import { useState } from "react";
 import type { Patient } from "@/domain/patient/patient";
 import type { Visit } from "@/domain/visit/visit";
 import { deleteVisit, listVisits } from "@/infrastructure/container";
+import { deleteErrorMessage } from "../../async/delete-error";
 import { withTimeout } from "../../async/with-timeout";
 import { formatDate } from "../../format";
 import { useAsync } from "../../hooks/use-async";
@@ -46,16 +47,20 @@ export function VisitHistory({ patient }: { patient: Patient }) {
   const remove = async (visit: Visit) => {
     const ok = await confirm({
       title: `Excluir a consulta ${visit.sequence}?`,
-      description: "O odontograma, as anotações e os procedimentos desta consulta serão apagados. As outras consultas do paciente continuam.",
+      description: "O odontograma, as anotações e os procedimentos desta consulta saem do histórico. Por lei (Lei 13.787/2018), o registro fica arquivado com segurança por 20 anos. As outras consultas do paciente continuam.",
       confirmLabel: "Excluir consulta",
     });
     if (!ok) return;
     setActionError("");
+    setBusyId(visit.id);
     try {
       await withTimeout(deleteVisit.execute(visit.id));
+    } catch (err) {
+      setActionError(deleteErrorMessage(err, "a consulta"));
+    } finally {
+      setBusyId(null);
+      // Recarrega mesmo na falha: o histórico mostra o que de fato ficou no banco.
       reload();
-    } catch {
-      setActionError("Não foi possível excluir a consulta agora. Tente de novo.");
     }
   };
 
@@ -104,7 +109,7 @@ export function VisitHistory({ patient }: { patient: Patient }) {
                   <Button variant="secondary" disabled={busy} onClick={() => print(visit)} className="flex-1">
                     <Printer className="h-4 w-4" /> Imprimir
                   </Button>
-                  <Button variant="danger" onClick={() => remove(visit)} aria-label="Excluir consulta" className="px-3">
+                  <Button variant="danger" disabled={busy} onClick={() => remove(visit)} aria-label="Excluir consulta" className="px-3">
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>

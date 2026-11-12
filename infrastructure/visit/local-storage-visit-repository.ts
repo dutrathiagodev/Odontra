@@ -1,9 +1,14 @@
+import { RecordNotFoundError } from "@/domain/errors";
 import type { Visit } from "@/domain/visit/visit";
 import type { VisitRepository } from "@/domain/visit/visit-repository";
-import { LocalStorageCollection } from "../local-storage-collection";
+import { DEVICE_STORE, LocalStorageCollection, type BrowserStoreConfig } from "../local-storage-collection";
 
 export class LocalStorageVisitRepository implements VisitRepository {
-  private readonly store = new LocalStorageCollection<Visit>("pronturario-maju:visits");
+  private readonly store: LocalStorageCollection<Visit>;
+
+  constructor(config: BrowserStoreConfig = DEVICE_STORE) {
+    this.store = new LocalStorageCollection<Visit>(config.visits, config.kind);
+  }
 
   async findByPatient(patientId: string) {
     return this.store.all().filter((v) => v.patientId === patientId);
@@ -19,10 +24,7 @@ export class LocalStorageVisitRepository implements VisitRepository {
   }
 
   async delete(id: string) {
+    if (!this.store.all().some((v) => v.id === id)) throw new RecordNotFoundError();
     this.store.remove((v) => v.id === id);
-  }
-
-  async deleteByPatient(patientId: string) {
-    this.store.remove((v) => v.patientId === patientId);
   }
 }

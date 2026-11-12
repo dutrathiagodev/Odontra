@@ -3,6 +3,8 @@
 import { CalendarClock, ChevronRight, Search, Sparkles, Trash2, UserPlus, Users, UserRoundPlus } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, type ReactNode } from "react";
+import { cpfMatches } from "@/domain/patient/cpf";
+import { deleteErrorMessage } from "../async/delete-error";
 import { formatDate, formatRecordNumber } from "../format";
 import { usePatients } from "../hooks/use-patients";
 import { Avatar } from "../ui/avatar";
@@ -26,6 +28,7 @@ export function PatientList() {
   const { patients, error, retry, remove, loadDemo } = usePatients();
   const [actionError, setActionError] = useState("");
   const [loadingDemo, setLoadingDemo] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
@@ -37,7 +40,8 @@ export function PatientList() {
     return patients.filter(
       (p) =>
         p.identification.name.toLowerCase().includes(q) ||
-        (digits.length > 0 && (onlyDigits(p.identification.cpf).includes(digits) || onlyDigits(p.identification.homePhone).includes(digits))),
+        // CPF: a lista só tem a versão mascarada (o CPF inteiro fica cifrado no banco).
+        (digits.length > 0 && (cpfMatches(p.cpfMasked, digits) || onlyDigits(p.identification.homePhone).includes(digits))),
     );
   }, [patients, query]);
 
@@ -58,15 +62,18 @@ export function PatientList() {
   const confirmRemove = async (id: string, name: string) => {
     const ok = await confirm({
       title: `Excluir ${name || "este paciente"}?`,
-      description: "A ficha, a foto e todo o histórico de consultas serão apagados. Essa ação não pode ser desfeita.",
+      description: "A ficha, a foto e todo o histórico de consultas saem do Odontra. Por lei (Lei 13.787/2018), o prontuário fica arquivado com segurança por 20 anos e não volta a aparecer no app.",
       confirmLabel: "Excluir paciente",
     });
     if (!ok) return;
     setActionError("");
+    setDeletingId(id);
     try {
       await remove(id);
-    } catch {
-      setActionError("Não foi possível excluir agora. Verifique a conexão e tente de novo.");
+    } catch (err) {
+      setActionError(deleteErrorMessage(err, "o paciente"));
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -162,7 +169,7 @@ export function PatientList() {
                   <li key={patient.id} className="group relative">
                     <Link href={`/painel/pacientes/${patient.id}`} className="grid items-center gap-x-4 gap-y-0.5 px-4 py-3.5 pr-14 transition hover:bg-brand-50/50 md:grid-cols-[2.2fr_0.8fr_1.2fr_1fr_auto] md:pr-4">
                       <span className="flex min-w-0 items-center gap-3">
-                        <Avatar name={name} photo={patient.photo} size="h-11 w-11" />
+                        <Avatar name={name} photo={patient.thumb} size="h-11 w-11" />
                         <span className="min-w-0">
                           <span className="block truncate font-bold text-navy-900">{name || "Sem nome"}</span>
                           <span className="block text-xs text-slate-500 md:hidden">Nº {formatRecordNumber(patient.number)} · {formatDate(patient.updatedAt)}</span>
@@ -177,6 +184,8 @@ export function PatientList() {
                     </Link>
                     <button
                       onClick={() => confirmRemove(patient.id, name)}
+                      disabled={deletingId !== null}
+                      aria-busy={deletingId === patient.id}
                       aria-label={`Excluir ${name}`}
                       className="absolute right-2 top-1/2 grid h-11 w-11 -translate-y-1/2 place-items-center rounded-lg text-slate-300 transition hover:bg-rose-50 hover:text-rose-600 md:right-14"
                     >

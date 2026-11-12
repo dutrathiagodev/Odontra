@@ -75,7 +75,6 @@ function visitsOf(list: Visit[]): VisitRepository {
     findById: async () => null,
     save: async (v) => v,
     delete: async () => {},
-    deleteByPatient: async () => {},
   };
 }
 

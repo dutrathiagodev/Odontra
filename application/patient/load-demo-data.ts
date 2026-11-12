@@ -3,7 +3,10 @@ import type { PatientRepository } from "@/domain/patient/patient-repository";
 import type { Visit } from "@/domain/visit/visit";
 import type { VisitRepository } from "@/domain/visit/visit-repository";
 
-/** Grava um conjunto de pacientes e consultas de demonstração. */
+/**
+ * Grava um conjunto de pacientes e consultas de demonstração.
+ * Recebe os repositórios do modo exemplo (só na aba do navegador), nunca os do banco.
+ */
 export class LoadDemoData {
   constructor(
     private readonly patients: PatientRepository,

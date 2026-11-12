@@ -19,6 +19,9 @@ import { LocalStorageAppointmentRepository } from "./appointment/local-storage-a
 import { SupabaseAppointmentRepository } from "./appointment/supabase-appointment-repository";
 import { LocalStoragePatientRepository } from "./patient/local-storage-patient-repository";
 import { SupabasePatientRepository } from "./patient/supabase-patient-repository";
+import { demoAware, demoMode } from "./demo/demo-mode";
+import { makeCanvasThumbnail } from "./image/canvas-thumbnail";
+import { DEMO_STORE } from "./local-storage-collection";
 import { LocalStorageProfileRepository } from "./profile/local-storage-profile-repository";
 import { SupabaseProfileRepository } from "./profile/supabase-profile-repository";
 import { getBrowserSupabase } from "./supabase/browser-client";
@@ -31,26 +34,38 @@ import { SupabaseVisitRepository } from "./visit/supabase-visit-repository";
 // em produção sem as variáveis, o repositório do Supabase falha com erro claro em vez de gravar no navegador.
 const useDatabase = isSupabaseConfigured || process.env.NODE_ENV === "production";
 
-const patientRepository: PatientRepository = useDatabase
+const realPatients: PatientRepository = useDatabase
   ? new SupabasePatientRepository(getBrowserSupabase)
   : new LocalStoragePatientRepository();
-const visitRepository: VisitRepository = useDatabase
+const realVisits: VisitRepository = useDatabase
   ? new SupabaseVisitRepository(getBrowserSupabase)
   : new LocalStorageVisitRepository();
-const appointmentRepository: AppointmentRepository = useDatabase
+const realAppointments: AppointmentRepository = useDatabase
   ? new SupabaseAppointmentRepository(getBrowserSupabase)
   : new LocalStorageAppointmentRepository();
 const profileRepository: ProfileRepository = useDatabase
   ? new SupabaseProfileRepository(getBrowserSupabase)
   : new LocalStorageProfileRepository();
 
+// Modo exemplo: pacientes fictícios só nesta aba (sessionStorage). Nunca gravam no banco.
+const demoPatients = new LocalStoragePatientRepository(DEMO_STORE);
+const demoVisits = new LocalStorageVisitRepository(DEMO_STORE);
+const demoAppointments = new LocalStorageAppointmentRepository(DEMO_STORE);
+
+const patientRepository = demoAware(realPatients, demoPatients);
+const visitRepository = demoAware(realVisits, demoVisits);
+const appointmentRepository = demoAware(realAppointments, demoAppointments);
+
+export { demoMode };
+
 export const listPatients = new ListPatients(patientRepository);
 export const getPatient = new GetPatient(patientRepository);
-export const savePatient = new SavePatient(patientRepository);
+export const savePatient = new SavePatient(patientRepository, makeCanvasThumbnail);
 export const startNewPatient = new StartNewPatient(patientRepository);
-export const deletePatient = new DeletePatient(patientRepository, visitRepository);
+export const deletePatient = new DeletePatient(patientRepository);
 
-export const loadDemoData = new LoadDemoData(patientRepository, visitRepository);
+/** Grava os exemplos direto nos repositórios da aba, nunca nos reais. */
+export const loadDemoData = new LoadDemoData(demoPatients, demoVisits);
 
 export const listVisits = new ListVisits(visitRepository);
 export const getVisit = new GetVisit(visitRepository);
