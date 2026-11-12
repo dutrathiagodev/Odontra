@@ -5,8 +5,6 @@ export class SaveVisit {
   constructor(private readonly visits: VisitRepository) {}
 
   async execute(visit: Visit): Promise<Visit> {
-    const saved = { ...visit, updatedAt: new Date().toISOString() };
-    await this.visits.save(saved);
-    return saved;
+    return this.visits.save({ ...visit, updatedAt: new Date().toISOString() });
   }
 }

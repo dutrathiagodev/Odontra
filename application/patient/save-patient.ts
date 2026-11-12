@@ -5,8 +5,6 @@ export class SavePatient {
   constructor(private readonly patients: PatientRepository) {}
 
   async execute(patient: Patient): Promise<Patient> {
-    const saved = { ...patient, updatedAt: new Date().toISOString() };
-    await this.patients.save(saved);
-    return saved;
+    return this.patients.save({ ...patient, updatedAt: new Date().toISOString() });
   }
 }

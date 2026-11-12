@@ -52,8 +52,8 @@ export class SupabaseVisitRepository implements VisitRepository {
     return data ? toDomain(data as VisitRow) : null;
   }
 
-  async save(visit: Visit): Promise<void> {
-    const { error } = await this.db().from("visits").upsert({
+  async save(visit: Visit): Promise<Visit> {
+    const { data, error } = await this.db().from("visits").upsert({
       id: visit.id,
       patient_id: visit.patientId,
       sequence: visit.sequence,
@@ -64,8 +64,9 @@ export class SupabaseVisitRepository implements VisitRepository {
       clinical_exam: visit.clinicalExam,
       odontogram: visit.odontogram,
       findings: visit.findings,
-    });
+    }).select("sequence, updated_at").single();
     if (error) throw error;
+    return { ...visit, sequence: data.sequence, updatedAt: data.updated_at };
   }
 
   async delete(id: string): Promise<void> {

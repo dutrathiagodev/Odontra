@@ -42,16 +42,17 @@ export class SupabasePatientRepository implements PatientRepository {
     return data ? toDomain(data as PatientRow) : null;
   }
 
-  async save(patient: Patient): Promise<void> {
-    // Allowlist de colunas: owner_id e datas não vêm do cliente.
-    const { error } = await this.db().from("patients").upsert({
+  async save(patient: Patient): Promise<Patient> {
+    // Allowlist de colunas: owner_id e datas não vêm do cliente. O banco decide o Nº em cadastro novo.
+    const { data, error } = await this.db().from("patients").upsert({
       id: patient.id,
       record_number: patient.number,
       photo: patient.photo,
       identification: patient.identification,
       anamnesis: patient.anamnesis,
-    });
+    }).select("record_number, updated_at").single();
     if (error) throw error;
+    return { ...patient, number: data.record_number, updatedAt: data.updated_at };
   }
 
   async delete(id: string): Promise<void> {

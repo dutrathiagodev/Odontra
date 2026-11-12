@@ -15,6 +15,7 @@ export class LocalStorageVisitRepository implements VisitRepository {
 
   async save(visit: Visit) {
     this.store.upsert(visit);
+    return visit;
   }
 
   async delete(id: string) {

@@ -15,6 +15,7 @@ export class LocalStoragePatientRepository implements PatientRepository {
 
   async save(patient: Patient) {
     this.store.upsert(patient);
+    return patient;
   }
 
   async delete(id: string) {
