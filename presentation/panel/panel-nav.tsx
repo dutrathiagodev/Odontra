@@ -1,11 +1,12 @@
 "use client";
 
-import { Plus, ScanSearch, Users } from "lucide-react";
+import { CalendarDays, Plus, ScanSearch, Users } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const NAV = [
   { href: "/painel", label: "Pacientes", icon: Users, match: (p: string) => p === "/painel" || (p.startsWith("/painel/pacientes") && !p.endsWith("/pacientes/novo")) },
+  { href: "/painel/agenda", label: "Agenda", icon: CalendarDays, match: (p: string) => p.startsWith("/painel/agenda") },
   { href: "/painel/pacientes/novo", label: "Novo paciente", icon: Plus, match: (p: string) => p.endsWith("/pacientes/novo") },
   { href: "/painel/anatomia", label: "Anatomia", icon: ScanSearch, match: (p: string) => p.startsWith("/painel/anatomia") },
 ];
@@ -32,7 +33,7 @@ export function PanelNav({ variant }: { variant: "side" | "bottom" }) {
   }
 
   return (
-    <nav className="safe-bottom fixed inset-x-0 bottom-0 z-30 grid grid-cols-3 border-t border-slate-200 bg-white/95 pt-2 backdrop-blur lg:hidden">
+    <nav className="safe-bottom fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t border-slate-200 bg-white/95 pt-2 backdrop-blur lg:hidden">
       {NAV.map(({ href, label, icon: Icon, match }) => (
         <Link key={href} href={href} className={`flex min-h-12 flex-col items-center justify-center gap-0.5 text-[11px] font-bold ${match(pathname) ? "text-brand-700" : "text-slate-400"}`}>
           <Icon className="h-5 w-5" />
