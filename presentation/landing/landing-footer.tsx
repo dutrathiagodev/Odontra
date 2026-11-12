@@ -19,9 +19,18 @@ export function LandingFooter() {
         </div>
       </section>
       <footer className="has-tab-bar bg-[#06101f]">
-        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-4 px-5 py-8 text-sm text-white/55 sm:flex-row sm:items-center sm:px-8">
+        <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-4 px-5 pb-24 pt-8 text-sm text-white/55 sm:flex-row sm:items-center sm:px-8 lg:pb-28">
           <Logo />
-          <p className="max-w-md sm:text-right">Prontuário odontológico digital. Fotos de exemplo: Unsplash.</p>
+          <div className="space-y-1 sm:text-right">
+            <p>Prontuário odontológico digital. <span className="text-white/40">Fotos: Unsplash.</span></p>
+            <p className="text-white/40">
+              © 2026 Odontra. Desenvolvido por{" "}
+              <a href="https://github.com/dutrathiagodev" target="_blank" rel="noopener noreferrer" className="font-semibold text-white/70 hover:text-white">
+                Risemov
+              </a>
+              .
+            </p>
+          </div>
         </div>
       </footer>
     </>
