@@ -10,6 +10,8 @@ const ITEMS = [
   { id: "anatomia", href: "#anatomia", label: "Anatomia", icon: ScanSearch },
 ];
 
+const tabClass = "flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-full text-[10.5px] font-semibold transition-colors";
+
 /** Barra de navegação inferior para iPhone, Android e iPad em pé (some no desktop). */
 export function MobileTabBar() {
   const [active, setActive] = useState("inicio");
@@ -28,32 +30,23 @@ export function MobileTabBar() {
   }, []);
 
   return (
-    <nav aria-label="Navegação" className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 flex items-center gap-2 lg:hidden">
-      {/* Abas numa pílula de vidro, como a barra do iOS 26. */}
-      <div className="grid flex-1 grid-cols-3 rounded-full bg-white/75 p-1 shadow-lg shadow-ink/10 ring-1 ring-black/5 backdrop-blur-xl">
+    <nav aria-label="Navegação" className="fixed inset-x-3 bottom-[max(0.75rem,env(safe-area-inset-bottom))] z-40 lg:hidden">
+      {/* Uma pílula de vidro só, como a barra do iOS 26; "Entrar" é a última aba, em destaque discreto. */}
+      <div className="grid grid-cols-4 rounded-full bg-white/80 p-1 shadow-lg shadow-ink/10 ring-1 ring-black/5 backdrop-blur-xl">
         {ITEMS.map(({ id, href, label, icon: Icon }) => {
           const selected = active === id;
           return (
-            <a
-              key={id}
-              href={href}
-              aria-current={selected ? "true" : undefined}
-              className={`flex min-h-12 flex-col items-center justify-center gap-0.5 rounded-full text-[10.5px] font-semibold transition-colors ${selected ? "bg-ink/[0.06] text-accent" : "text-ink/60"}`}
-            >
+            <a key={id} href={href} aria-current={selected ? "true" : undefined} className={`${tabClass} ${selected ? "bg-ink/[0.06] text-accent" : "text-ink/60"}`}>
               <Icon className="h-[19px] w-[19px]" strokeWidth={selected ? 2.4 : 2} />
               {label}
             </a>
           );
         })}
+        <Link href="/entrar" className={`${tabClass} text-accent`}>
+          <LogIn className="h-[19px] w-[19px]" strokeWidth={2.4} />
+          Entrar
+        </Link>
       </div>
-      {/* Ação principal separada, em círculo, como o botão de busca do iOS. */}
-      <Link
-        href="/entrar"
-        aria-label="Entrar"
-        className="grid h-14 w-14 shrink-0 place-items-center rounded-full bg-accent text-white shadow-lg shadow-accent/30 ring-1 ring-white/30 active:scale-95"
-      >
-        <LogIn className="h-[22px] w-[22px]" />
-      </Link>
     </nav>
   );
 }
