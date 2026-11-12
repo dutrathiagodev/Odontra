@@ -173,7 +173,7 @@ app (rotas) ─► presentation ─► application ─► domain
 | `application/` | Casos de uso, um por arquivo, com método `execute`. |
 | `infrastructure/` | Repositórios Supabase (e `localStorage` só em desenvolvimento), cliente Supabase, e-mail e o composition root `container.ts`. |
 | `presentation/` | Componentes React: painel, agenda, odontograma, ficha de papel, anatomia, PDF, landing e hooks (`useRecordEditor`, `useAsync`). |
-| `app/` | Rotas do Next.js 16 (App Router) e rotas de API (`/auth/confirm`, `/api/boas-vindas`). |
+| `app/` | Rotas do Next.js 16 (App Router), a tela `/auth/confirm` (link do e-mail validado só no clique do botão) e a rota de API `/api/boas-vindas`. |
 | `supabase/` | Migrations, testes pgTAP, dados de teste locais e templates de e-mail. |
 
 Detalhes em [docs/architecture](docs/architecture/README.md).
