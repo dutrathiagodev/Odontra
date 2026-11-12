@@ -10,6 +10,11 @@ interface BlankVisitParams {
   now?: Date;
 }
 
+/** AAAA-MM-DD no fuso local do aparelho. */
+export function localDate(date: Date): string {
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
 export function createBlankVisit({
   patientId,
   sequence,
@@ -23,7 +28,7 @@ export function createBlankVisit({
     id: crypto.randomUUID(),
     patientId,
     sequence,
-    date: timestamp.slice(0, 10),
+    date: localDate(now),
     createdAt: timestamp,
     updatedAt: timestamp,
     dentist,
