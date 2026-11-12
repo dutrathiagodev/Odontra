@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Redefinir senha</title>
+</head>
+<body style="margin:0;padding:0;background:#eef2f7;font-family:Helvetica,Arial,sans-serif;color:#13233f;">
+<span style="display:none;max-height:0;overflow:hidden;opacity:0;">Crie uma nova senha para a sua conta do Odontra.</span>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eef2f7;padding:32px 12px;">
+  <tr><td align="center">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;background:#ffffff;border:1px solid #d9e1ec;border-radius:12px;overflow:hidden;">
+      <tr><td style="background:#0e2240;padding:22px 32px;">
+        <img src="{{ .SiteURL }}/email-logo.png" width="108" height="34" alt="Odontra" style="display:block;border:0;height:34px;width:auto;">
+      </td></tr>
+      <tr><td style="padding:36px 32px 8px 32px;">
+        <h1 style="margin:0 0 12px 0;font-size:22px;line-height:1.3;font-weight:700;color:#0e2240;">Redefinir sua senha</h1>
+        <p style="margin:0 0 24px 0;font-size:15px;line-height:1.6;color:#3d4d66;">Recebemos um pedido para trocar a senha da conta <strong>{{ .Email }}</strong>. Use o botão abaixo para criar uma nova.</p>
+        <table role="presentation" cellpadding="0" cellspacing="0"><tr><td style="border-radius:8px;background:#2357d9;">
+          <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/redefinir-senha" style="display:inline-block;padding:14px 26px;font-size:15px;font-weight:700;color:#ffffff;text-decoration:none;border-radius:8px;">Criar nova senha</a>
+        </td></tr></table>
+        <p style="margin:20px 0 0 0;font-size:13px;line-height:1.6;color:#5b6b84;">Se o botão não abrir, copie este endereço no navegador:<br><a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/redefinir-senha" style="color:#2357d9;word-break:break-all;">{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=recovery&next=/redefinir-senha</a></p>
+      </td></tr>
+      <tr><td style="padding:8px 32px 32px 32px;">
+        <p style="margin:0;font-size:13px;line-height:1.6;color:#5b6b84;">O link vale por 1 hora e funciona uma vez. Se não foi você, ignore este e-mail: sua senha atual continua valendo.</p>
+      </td></tr>
+      <tr><td style="border-top:1px solid #e3e9f1;padding:18px 32px;background:#f7f9fc;">
+        <p style="margin:0;font-size:12px;line-height:1.6;color:#7a889e;">Você recebeu este e-mail porque ele foi usado numa conta do Odontra, o prontuário odontológico digital. Não responda: esta caixa não é monitorada.</p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body>
+</html>
