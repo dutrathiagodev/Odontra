@@ -1,13 +1,14 @@
 "use client";
 
-import { Check, Save } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import type { Anamnesis, Identification, Patient } from "@/domain/patient/patient";
 import { getPatient, savePatient, startNewPatient } from "@/infrastructure/container";
 import { formatRecordNumber } from "../../format";
+import { useRecordEditor } from "../../hooks/use-record-editor";
 import { Avatar } from "../../ui/avatar";
-import { Button } from "../../ui/button";
+import { LoadState } from "../../ui/load-state";
+import { SaveBar } from "../../ui/save-bar";
 import { Tabs } from "../../ui/tabs";
 import { AnamnesisSection } from "./anamnesis-section";
 import { HealthAlerts } from "./health-alerts";
@@ -17,42 +18,31 @@ import { VisitHistory } from "./visit-history";
 
 type TabKey = "data" | "anamnesis" | "history";
 
+/** O banco decide o Nº e as datas; o resto é o que está na tela. */
+const mergeSaved = (current: Patient, saved: Patient): Patient => ({ ...current, id: saved.id, number: saved.number, updatedAt: saved.updatedAt });
+
 export function PatientEditor({ patientId }: { patientId?: string }) {
   const router = useRouter();
-  const [patient, setPatient] = useState<Patient | null>(null);
   const [persisted, setPersisted] = useState(Boolean(patientId));
-  const [missing, setMissing] = useState(false);
   const [tab, setTab] = useState<TabKey>("data");
-  const [justSaved, setJustSaved] = useState(false);
+  const editor = useRecordEditor<Patient>({
+    load: () => (patientId ? getPatient.execute(patientId) : startNewPatient.execute()),
+    persist: (p) => savePatient.execute(p),
+    mergeSaved,
+    deps: [patientId],
+  });
+  const { value: patient, edit } = editor;
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const loaded = patientId ? await getPatient.execute(patientId) : await startNewPatient.execute();
-      if (cancelled) return;
-      if (loaded) setPatient(loaded);
-      else setMissing(true);
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [patientId]);
+  if (editor.loadState !== "ready" || !patient) {
+    return <LoadState state={editor.loadState === "ready" ? "loading" : editor.loadState} error={editor.loadError} missingText="Paciente não encontrado." onRetry={editor.retry} />;
+  }
 
-  if (missing) return <p className="py-10 text-center text-slate-500">Paciente não encontrado.</p>;
-  if (!patient) return <p className="py-10 text-center text-slate-400">Carregando…</p>;
-
-  const edit = (next: Partial<Patient>) => {
-    setPatient({ ...patient, ...next });
-    setJustSaved(false);
-  };
   const editIdentification = (patch: Partial<Identification>) => edit({ identification: { ...patient.identification, ...patch } });
   const editAnamnesis = (patch: Partial<Anamnesis>) => edit({ anamnesis: { ...patient.anamnesis, ...patch } });
 
   const save = async () => {
-    const saved = await savePatient.execute(patient);
-    setPatient(saved);
-    setJustSaved(true);
-    if (!persisted) {
+    const saved = await editor.save();
+    if (saved && !persisted) {
       setPersisted(true);
       router.replace(`/painel/pacientes/${saved.id}`);
     }
@@ -72,7 +62,9 @@ export function PatientEditor({ patientId }: { patientId?: string }) {
         <Avatar name={name || "Novo"} photo={patient.photo} size="h-14 w-14" />
         <div className="min-w-0">
           <h1 className="truncate text-xl font-extrabold text-navy-900">{name || "Novo paciente"}</h1>
-          <p className="text-sm font-semibold text-brand-600">Prontuário Nº {formatRecordNumber(patient.number)}</p>
+          <p className="text-sm font-semibold text-brand-600">
+            {persisted ? `Prontuário Nº ${formatRecordNumber(patient.number)}` : "Nº do prontuário definido ao cadastrar"}
+          </p>
         </div>
       </div>
 
@@ -92,12 +84,13 @@ export function PatientEditor({ patientId }: { patientId?: string }) {
       {tab === "history" && persisted && <VisitHistory patient={patient} />}
 
       {tab !== "history" && (
-        <div className="safe-bottom fixed inset-x-0 bottom-[60px] z-20 border-t border-slate-200 bg-white/95 px-4 pt-3 backdrop-blur sm:static sm:border-0 sm:bg-transparent sm:p-0">
-          <Button onClick={save} disabled={!name.trim()} className="w-full sm:w-auto">
-            {justSaved ? <Check className="h-4 w-4" /> : <Save className="h-4 w-4" />}
-            {justSaved ? "Salvo" : persisted ? "Salvar alterações" : "Cadastrar paciente"}
-          </Button>
-        </div>
+        <SaveBar
+          state={editor.saveState}
+          error={editor.saveError}
+          label={persisted ? "Salvar alterações" : "Cadastrar paciente"}
+          onSave={save}
+          disabled={!name.trim()}
+        />
       )}
     </div>
   );
