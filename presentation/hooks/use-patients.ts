@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback } from "react";
-import type { Patient } from "@/domain/patient/patient";
+import type { PatientSummary } from "@/domain/patient/patient";
 import { deletePatient, listPatients, loadDemoData } from "@/infrastructure/container";
 import { withTimeout } from "../async/with-timeout";
 import { buildDemoData } from "../demo/demo-patients";
@@ -9,7 +9,7 @@ import { useAsync } from "./use-async";
 
 export function usePatients() {
   const { state, reload, retry } = useAsync(() => listPatients.execute(), []);
-  const patients: Patient[] | null = state.status === "ready" ? state.data : null;
+  const patients: PatientSummary[] | null = state.status === "ready" ? state.data : null;
 
   /**
    * Exclui e recarrega. Lança erro (com tempo limite) para a tela avisar.

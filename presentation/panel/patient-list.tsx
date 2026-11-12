@@ -167,7 +167,7 @@ export function PatientList() {
                   <li key={patient.id} className="group relative">
                     <Link href={`/painel/pacientes/${patient.id}`} className="grid items-center gap-x-4 gap-y-0.5 px-4 py-3.5 pr-14 transition hover:bg-brand-50/50 md:grid-cols-[2.2fr_0.8fr_1.2fr_1fr_auto] md:pr-4">
                       <span className="flex min-w-0 items-center gap-3">
-                        <Avatar name={name} photo={patient.photo} size="h-11 w-11" />
+                        <Avatar name={name} photo={patient.thumb} size="h-11 w-11" />
                         <span className="min-w-0">
                           <span className="block truncate font-bold text-navy-900">{name || "Sem nome"}</span>
                           <span className="block text-xs text-slate-500 md:hidden">Nº {formatRecordNumber(patient.number)} · {formatDate(patient.updatedAt)}</span>
