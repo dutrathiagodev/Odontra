@@ -16,19 +16,12 @@ const OPTIONS: ToothCondition[] = ["healthy", "caries", "restoration", "crown", 
 /** Simula o toque em um dente: a condição é escolhida e a observação é digitada, em loop. */
 export function ToothScene() {
   const [step, setStep] = useState(0);
-  const [typed, setTyped] = useState(0);
   const current = FLOW[step];
 
   useEffect(() => {
     const timer = setInterval(() => setStep((s) => (s + 1) % FLOW.length), 3600);
     return () => clearInterval(timer);
   }, []);
-
-  useEffect(() => {
-    setTyped(0);
-    const timer = setInterval(() => setTyped((n) => (n < current.note.length ? n + 1 : n)), 38);
-    return () => clearInterval(timer);
-  }, [current.note]);
 
   return (
     <div className="grid items-center gap-5 text-navy-900 sm:grid-cols-[0.8fr_1.2fr]">
@@ -53,11 +46,25 @@ export function ToothScene() {
           })}
         </div>
         <p className="mt-4 text-xs font-bold uppercase tracking-wide text-slate-500">Observação</p>
-        <p className="mt-1.5 min-h-16 rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-700">
-          {current.note.slice(0, typed)}
-          <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-brand-600 align-middle" />
-        </p>
+        <TypedNote key={current.note} text={current.note} />
       </div>
     </div>
+  );
+}
+
+/** Digita o texto letra a letra; remontado (via key) a cada nova observação. */
+function TypedNote({ text }: { text: string }) {
+  const [typed, setTyped] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => setTyped((n) => Math.min(n + 1, text.length)), 38);
+    return () => clearInterval(timer);
+  }, [text]);
+
+  return (
+    <p className="mt-1.5 min-h-16 rounded-xl border border-slate-200 bg-white p-3 text-sm text-slate-700">
+      {text.slice(0, typed)}
+      <span className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-brand-600 align-middle" />
+    </p>
   );
 }
