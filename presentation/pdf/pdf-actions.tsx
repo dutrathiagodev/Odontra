@@ -1,19 +1,34 @@
 import type { Patient } from "@/domain/patient/patient";
+import { resolveDentist, type Profile } from "@/domain/profile/profile";
 import type { Visit } from "@/domain/visit/visit";
+import { getProfile } from "@/infrastructure/container";
+import { withTimeout } from "../async/with-timeout";
 import { formatRecordNumber } from "../format";
 import { createQrDataUrl } from "../qr-code";
 import { getSiteUrl } from "../site-url";
 
+/** Perfil só para completar a assinatura: se não carregar, o PDF sai com o que está na consulta. */
+async function loadProfileForSignature(visit: Visit): Promise<Profile | null> {
+  if (visit.dentist.name.trim() && visit.dentist.cro.trim()) return null;
+  try {
+    return await withTimeout(getProfile.execute(), 8_000);
+  } catch {
+    return null;
+  }
+}
+
 async function buildPdfBlob(patient: Patient, visit: Visit): Promise<Blob> {
   // Importação dinâmica: a biblioteca de PDF só é carregada quando o usuário pede o arquivo.
-  const [{ pdf }, { RecordPdf }] = await Promise.all([
+  const [{ pdf }, { RecordPdf }, profile] = await Promise.all([
     import("@react-pdf/renderer"),
     import("./record-pdf"),
+    loadProfileForSignature(visit),
   ]);
+  const signed: Visit = { ...visit, dentist: resolveDentist(visit.dentist, profile) };
   const siteUrl = getSiteUrl();
   const qrDataUrl = siteUrl ? await createQrDataUrl(siteUrl, 160) : undefined;
   const logoSrc = `${window.location.origin}/logo-mark-ink.png`;
-  return pdf(<RecordPdf patient={patient} visit={visit} logoSrc={logoSrc} qrDataUrl={qrDataUrl} siteUrl={siteUrl} />).toBlob();
+  return pdf(<RecordPdf patient={patient} visit={signed} logoSrc={logoSrc} qrDataUrl={qrDataUrl} siteUrl={siteUrl} />).toBlob();
 }
 
 function fileName(patient: Patient, visit: Visit): string {

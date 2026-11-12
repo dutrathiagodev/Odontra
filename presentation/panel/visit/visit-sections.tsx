@@ -12,7 +12,7 @@ export function ConsultationSection({ visit, onChange }: { visit: Visit; onChang
       <TextField label="Motivo da consulta" value={visit.reason} onChange={(reason) => onChange({ reason })} />
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField label="Cirurgião-dentista" value={visit.dentist.name} onChange={(name) => onChange({ dentist: { ...visit.dentist, name } })} />
-        <TextField label="CRO" value={visit.dentist.cro} onChange={(cro) => onChange({ dentist: { ...visit.dentist, cro } })} />
+        <TextField label="CRO" value={visit.dentist.cro} placeholder="CRO-SP 12345" onChange={(cro) => onChange({ dentist: { ...visit.dentist, cro } })} />
       </div>
     </SectionCard>
   );
