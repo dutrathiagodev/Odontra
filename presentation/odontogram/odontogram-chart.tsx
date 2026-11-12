@@ -51,6 +51,7 @@ export function OdontogramChart({ value, onChange, animated = false, showList = 
               <button
                 key={tooth}
                 type="button"
+                data-tooth={tooth}
                 disabled={!editable}
                 onClick={() => setSelected(tooth)}
                 aria-label={`Dente ${tooth}: ${TOOTH_CONDITION_LABELS[entry.condition]}${entry.note ? `. ${entry.note}` : ""}`}
@@ -59,7 +60,7 @@ export function OdontogramChart({ value, onChange, animated = false, showList = 
               >
                 <span className="text-[11px] font-bold text-slate-500">{tooth}</span>
                 <span className="block h-12 w-full max-w-9 sm:h-14">
-                  <ToothFigure condition={entry.condition} flipped={lower} />
+                  <ToothFigure fdi={tooth} condition={entry.condition} flipped={!lower} />
                 </span>
                 {entry.note && (
                   <span className="absolute right-0 top-4 grid h-4 w-4 place-items-center rounded-full bg-amber-400 text-white ring-2 ring-white">

@@ -28,7 +28,7 @@ export function ToothScene() {
       <div className="relative mx-auto grid h-56 w-44 place-items-center rounded-3xl bg-gradient-to-b from-white to-brand-50 ring-1 ring-brand-100 sm:h-72 sm:w-52">
         <span className="absolute left-3 top-3 rounded-lg bg-navy-900 px-2.5 py-1 text-sm font-extrabold text-white">26</span>
         <div key={current.condition} className="animate-slide-up h-40 w-24 drop-shadow-xl sm:h-52 sm:w-28">
-          <ToothFigure condition={current.condition} />
+          <ToothFigure fdi="26" condition={current.condition} />
         </div>
       </div>
 
