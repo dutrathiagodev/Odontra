@@ -20,10 +20,21 @@ export function ToothMascot() {
       const reach = Math.min(1, dist / 260);
       setLook({ x: (dx / dist) * reach, y: (dy / dist) * reach });
     };
-    const onPointer = (e: PointerEvent) => follow(e.clientX, e.clientY);
+    // No máximo uma atualização por quadro da tela: o movimento fica liso e não pesa a rolagem.
+    let frame = 0;
+    let last = { x: 0, y: 0 };
+    const onPointer = (e: PointerEvent) => {
+      last = { x: e.clientX, y: e.clientY };
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        follow(last.x, last.y);
+      });
+    };
     window.addEventListener("pointermove", onPointer, { passive: true });
     window.addEventListener("pointerdown", onPointer, { passive: true });
     return () => {
+      cancelAnimationFrame(frame);
       window.removeEventListener("pointermove", onPointer);
       window.removeEventListener("pointerdown", onPointer);
     };
