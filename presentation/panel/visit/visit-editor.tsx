@@ -10,13 +10,15 @@ import { getPatient, getVisit, saveVisit, startNewVisit } from "@/infrastructure
 import { formatRecordNumber } from "../../format";
 import { OdontogramChart } from "../../odontogram/odontogram-chart";
 import { downloadRecordPdf, printRecordPdf } from "../../pdf/pdf-actions";
+import { PaperRecordCard } from "../../record-card/paper-record-card";
+import { toPaperRecord } from "../../record-card/to-paper-record";
 import { Button } from "../../ui/button";
 import { SectionCard } from "../../ui/section-card";
 import { Tabs } from "../../ui/tabs";
 import { HealthAlerts } from "../patient/health-alerts";
 import { ClinicalExamSection, ConsultationSection, FindingsSection, OralHealthSection } from "./visit-sections";
 
-type TabKey = "visit" | "oral" | "exam" | "teeth" | "findings";
+type TabKey = "visit" | "oral" | "exam" | "teeth" | "findings" | "card";
 
 const TABS = [
   { key: "visit" as const, label: "Consulta" },
@@ -24,6 +26,7 @@ const TABS = [
   { key: "exam" as const, label: "Exame" },
   { key: "teeth" as const, label: "Odontograma" },
   { key: "findings" as const, label: "Procedimentos" },
+  { key: "card" as const, label: "Ficha" },
 ];
 
 export function VisitEditor({ patientId, visitId }: { patientId: string; visitId?: string }) {
@@ -114,6 +117,7 @@ export function VisitEditor({ patientId, visitId }: { patientId: string; visitId
         </SectionCard>
       )}
       {tab === "findings" && <FindingsSection value={visit.findings} onChange={(findings) => edit({ findings })} />}
+      {tab === "card" && <PaperRecordCard data={toPaperRecord(patient, visit)} onToothClick={() => setTab("teeth")} />}
 
       <div className="safe-bottom fixed inset-x-0 bottom-[60px] z-20 border-t border-slate-200 bg-white/95 px-4 pt-3 backdrop-blur sm:static sm:border-0 sm:bg-transparent sm:p-0">
         <Button onClick={save} className="w-full sm:w-auto">
