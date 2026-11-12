@@ -27,7 +27,7 @@ export function LandingFooter() {
       <footer className="bg-navy-950 py-8">
         <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-4 px-5 text-sm text-brand-200/70 sm:flex-row sm:items-center sm:px-8">
           <Logo />
-          <p>Os dados ficam salvos apenas neste dispositivo.</p>
+          <p className="max-w-md sm:text-right">Os dados ficam salvos apenas neste dispositivo. Fotos de exemplo: Unsplash.</p>
         </div>
       </footer>
     </>
