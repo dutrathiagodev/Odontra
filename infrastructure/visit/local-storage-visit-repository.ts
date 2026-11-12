@@ -1,3 +1,4 @@
+import { RecordNotFoundError } from "@/domain/errors";
 import type { Visit } from "@/domain/visit/visit";
 import type { VisitRepository } from "@/domain/visit/visit-repository";
 import { LocalStorageCollection } from "../local-storage-collection";
@@ -19,10 +20,7 @@ export class LocalStorageVisitRepository implements VisitRepository {
   }
 
   async delete(id: string) {
+    if (!this.store.all().some((v) => v.id === id)) throw new RecordNotFoundError();
     this.store.remove((v) => v.id === id);
-  }
-
-  async deleteByPatient(patientId: string) {
-    this.store.remove((v) => v.patientId === patientId);
   }
 }

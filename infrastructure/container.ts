@@ -41,7 +41,7 @@ export const listPatients = new ListPatients(patientRepository);
 export const getPatient = new GetPatient(patientRepository);
 export const savePatient = new SavePatient(patientRepository);
 export const startNewPatient = new StartNewPatient(patientRepository);
-export const deletePatient = new DeletePatient(patientRepository, visitRepository);
+export const deletePatient = new DeletePatient(patientRepository);
 
 export const loadDemoData = new LoadDemoData(patientRepository, visitRepository);
 

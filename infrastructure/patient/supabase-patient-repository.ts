@@ -1,4 +1,5 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { RecordNotFoundError } from "@/domain/errors";
 import type { Patient } from "@/domain/patient/patient";
 import type { PatientRepository } from "@/domain/patient/patient-repository";
 
@@ -56,7 +57,10 @@ export class SupabasePatientRepository implements PatientRepository {
   }
 
   async delete(id: string): Promise<void> {
-    const { error } = await this.db().from("patients").delete().eq("id", id);
+    // Um único DELETE: as consultas saem por cascata no próprio banco (tudo ou nada).
+    // A RLS não dá erro quando a linha não é visível: confere se algo foi de fato excluído.
+    const { data, error } = await this.db().from("patients").delete().eq("id", id).select("id");
     if (error) throw error;
+    if (!data || data.length === 0) throw new RecordNotFoundError();
   }
 }
