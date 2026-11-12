@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { TOOTH_CONDITION_LABELS, type Odontogram, type ToothCondition } from "@/domain/tooth";
 import { PaperRecordCard, type PaperRecordData } from "../record-card/paper-record-card";
-import { ClinicPhoto } from "./clinic-photo";
+import { ClinicObject } from "./clinic-object";
 import { Reveal } from "./reveal";
 
 const SAMPLE: PaperRecordData = {
@@ -45,18 +45,19 @@ export function PaperCardSection() {
   };
 
   return (
-    <section id="ficha" className="bg-paper py-16 sm:py-24">
-      <div className="mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-5 sm:px-8 lg:grid-cols-[0.8fr_1.2fr]">
+    <section id="ficha" className="relative overflow-hidden bg-paper pb-28 pt-16 sm:pb-36 sm:pt-24">
+      {/* Instrumentos ao lado da ficha, como na mesa do consultório. */}
+      <ClinicObject
+        object="instruments"
+        className="-bottom-24 -left-16 w-44 -rotate-[32deg] drop-shadow-[0_24px_30px_rgba(14,34,64,0.25)] sm:-bottom-28 sm:w-52 lg:-bottom-32 lg:-left-6 lg:w-64"
+      />
+      <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-10 px-5 sm:px-8 lg:grid-cols-[0.8fr_1.2fr]">
         <Reveal>
           <h2 className="text-3xl font-semibold leading-tight tracking-[-0.02em] text-ink sm:text-5xl">A ficha que você já usa, agora no celular.</h2>
           <p className="mt-4 max-w-md text-slate-600">
             Mesmos campos, mesmo odontograma em vermelho, mesmo arco com radiografias. Só que preenchida em segundos, legível e guardada com segurança. Toque num dente para marcar.
           </p>
           <p aria-live="polite" className="mt-5 h-6 text-sm font-semibold text-accent">{last}</p>
-          <figure className="mt-6 max-w-md overflow-hidden rounded-2xl border border-line bg-white">
-            <ClinicPhoto photo="xrayReview" width={720} height={440} sizes="(min-width: 640px) 448px, 100vw" className="aspect-[18/11]" />
-            <figcaption className="px-4 py-3 text-sm text-muted">As radiografias continuam no arco da ficha, ao lado do dente certo.</figcaption>
-          </figure>
         </Reveal>
         <Reveal delay={120}>
           <div className="-rotate-[0.6deg] transition-transform duration-500 hover:rotate-0">
