@@ -1,35 +1,74 @@
+/* eslint-disable @next/next/no-img-element */
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
+import { BigTooth } from "../landing/illustrations";
+import { AUTH_ART } from "./auth-art";
 
-/** Moldura das telas de acesso: marca à esquerda no desktop, formulário em foco no celular. */
-export function AuthShell({ title, description, children, footer }: { title: string; description?: string; children: ReactNode; footer?: ReactNode }) {
+const NAV = [
+  { href: "/", label: "Início" },
+  { href: "/#tour", label: "Como funciona" },
+  { href: "/#anatomia", label: "Anatomia" },
+];
+
+function Art() {
+  if (AUTH_ART.video) {
+    return <video src={AUTH_ART.video} poster={AUTH_ART.image || undefined} autoPlay muted loop playsInline className="h-full w-full object-cover" />;
+  }
+  if (AUTH_ART.image) return <img src={AUTH_ART.image} alt="" className="h-full w-full object-cover" />;
   return (
-    <div className="grid min-h-dvh bg-paper lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)]">
-      <aside className="hidden flex-col justify-between bg-ink p-12 text-white lg:flex">
-        <Link href="/" className="flex items-center gap-3" aria-label="Odontra, página inicial">
-          <Image src="/logo-mark.png" alt="" width={292} height={293} className="h-11 w-11" priority />
-          <Image src="/logo-wordmark.png" alt="Odontra" width={573} height={118} className="h-6 w-auto" priority />
-        </Link>
-        <div className="max-w-sm">
-          <p className="text-3xl font-semibold leading-tight tracking-tight">Os prontuários dos seus pacientes, organizados e seguros.</p>
-          <p className="mt-4 text-base leading-relaxed text-white/70">Cada conta enxerga só os próprios pacientes. Os dados ficam protegidos no banco e o acesso exige e-mail confirmado.</p>
-        </div>
-        <p className="text-sm text-white/50">Odontra, prontuário odontológico digital</p>
-      </aside>
+    <div className="relative grid h-full w-full place-items-center">
+      <div className="absolute h-64 w-64 rounded-full bg-accent/35 blur-3xl" />
+      <BigTooth style={{ "--r": "-8deg" } as React.CSSProperties} className="animate-float-tooth relative h-64 drop-shadow-[0_30px_50px_rgba(35,87,217,0.55)] sm:h-80" />
+    </div>
+  );
+}
 
-      <main className="flex flex-col px-5 py-8 sm:px-10 lg:justify-center lg:px-16">
-        <Link href="/" className="mb-10 flex items-center gap-2.5 lg:hidden" aria-label="Odontra, página inicial">
-          <Image src="/logo-mark.png" alt="" width={292} height={293} className="h-9 w-9 brightness-0" priority />
-          <Image src="/logo-wordmark.png" alt="Odontra" width={573} height={118} className="h-5 w-auto brightness-0" priority />
-        </Link>
-        <div className="w-full max-w-md">
-          <h1 className="text-[1.75rem] font-semibold leading-tight tracking-tight text-ink">{title}</h1>
-          {description && <p className="mt-2 text-base leading-relaxed text-muted">{description}</p>}
-          <div className="mt-8">{children}</div>
-          {footer && <div className="mt-8 border-t border-line pt-6 text-sm text-muted">{footer}</div>}
+/**
+ * Telas de acesso no estilo da referência: cartão escuro sobre a arte desfocada,
+ * menu no topo, arte à esquerda e formulário à direita.
+ */
+export function AuthShell({ title, description, children, footer, mode = "signin" }: { title: string; description?: string; children: ReactNode; footer?: ReactNode; mode?: "signin" | "signup" | "other" }) {
+  return (
+    <div className="relative isolate min-h-dvh overflow-hidden bg-[#06101f] px-3 py-3 sm:px-6 sm:py-8">
+      <div className="pointer-events-none absolute inset-0 -z-10" aria-hidden>
+        {AUTH_ART.image ? (
+          <img src={AUTH_ART.image} alt="" className="h-full w-full scale-125 object-cover opacity-40 blur-2xl" />
+        ) : (
+          <div className="h-full w-full bg-[radial-gradient(60%_50%_at_25%_40%,rgba(35,87,217,0.35),transparent_70%)]" />
+        )}
+      </div>
+
+      <div className="mx-auto grid min-h-[calc(100dvh-1.5rem)] max-w-6xl overflow-hidden rounded-[28px] border border-white/15 bg-ink/75 text-white shadow-2xl shadow-black/50 backdrop-blur-xl sm:min-h-[calc(100dvh-4rem)] lg:grid-cols-2">
+        <header className="flex items-center justify-between px-5 pt-5 sm:px-10 sm:pt-8 lg:col-span-2">
+          <Link href="/" className="flex items-center gap-2.5" aria-label="Odontra, página inicial">
+            <Image src="/logo-mark.png" alt="" width={292} height={293} className="h-9 w-9" priority />
+            <Image src="/logo-wordmark.png" alt="Odontra" width={573} height={118} className="hidden h-5 w-auto sm:block" priority />
+          </Link>
+          <nav className="hidden items-center gap-8 text-sm text-white/70 md:flex">
+            {NAV.map((item) => (
+              <Link key={item.href} href={item.href} className="transition-colors hover:text-white">{item.label}</Link>
+            ))}
+          </nav>
+          <div className="flex items-center gap-4 text-sm">
+            <Link href="/entrar" className={`pb-0.5 ${mode === "signin" ? "border-b-2 border-white font-semibold text-white" : "text-white/70 hover:text-white"}`}>Entrar</Link>
+            <Link href="/cadastro" className={`rounded-full px-4 py-1.5 font-semibold ${mode === "signup" ? "bg-accent text-white" : "bg-white text-ink"}`}>Criar conta</Link>
+          </div>
+        </header>
+
+        <div className="relative h-56 sm:h-72 lg:h-auto">
+          <Art />
         </div>
-      </main>
+
+        <main className="flex items-center justify-center px-5 pb-10 sm:px-10 lg:py-10">
+          <div className="w-full max-w-sm">
+            <h1 className="text-center text-[1.9rem] font-semibold leading-tight tracking-tight">{title}</h1>
+            {description && <p className="mt-2 text-center text-[0.95rem] leading-relaxed text-white/65">{description}</p>}
+            <div className="mt-8">{children}</div>
+            {footer && <div className="mt-8 text-center text-sm text-white/65">{footer}</div>}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }
