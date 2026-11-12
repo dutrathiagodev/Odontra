@@ -1,6 +1,7 @@
 import { DeletePatient } from "@/application/patient/delete-patient";
 import { GetPatient } from "@/application/patient/get-patient";
 import { ListPatients } from "@/application/patient/list-patients";
+import { LoadDemoData } from "@/application/patient/load-demo-data";
 import { SavePatient } from "@/application/patient/save-patient";
 import { StartNewPatient } from "@/application/patient/start-new-patient";
 import { DeleteVisit } from "@/application/visit/delete-visit";
@@ -21,6 +22,8 @@ export const getPatient = new GetPatient(patientRepository);
 export const savePatient = new SavePatient(patientRepository);
 export const startNewPatient = new StartNewPatient(patientRepository);
 export const deletePatient = new DeletePatient(patientRepository, visitRepository);
+
+export const loadDemoData = new LoadDemoData(patientRepository, visitRepository);
 
 export const listVisits = new ListVisits(visitRepository);
 export const getVisit = new GetVisit(visitRepository);
