@@ -1,15 +1,14 @@
 import type { PatientRepository } from "@/domain/patient/patient-repository";
-import type { VisitRepository } from "@/domain/visit/visit-repository";
 
-/** Remover o paciente remove também todo o seu histórico de consultas. */
+/**
+ * Tira o paciente do app numa única operação. No banco é arquivamento (Lei 13.787/2018:
+ * prontuário guardado por 20 anos): paciente e consultas são arquivados juntos, então não sobra
+ * histórico pela metade se a rede cair no meio. Horários da agenda continuam, sem o vínculo.
+ */
 export class DeletePatient {
-  constructor(
-    private readonly patients: PatientRepository,
-    private readonly visits: VisitRepository,
-  ) {}
+  constructor(private readonly patients: PatientRepository) {}
 
-  async execute(id: string): Promise<void> {
-    await this.visits.deleteByPatient(id);
-    await this.patients.delete(id);
+  execute(id: string): Promise<void> {
+    return this.patients.delete(id);
   }
 }

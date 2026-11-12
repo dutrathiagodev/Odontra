@@ -9,6 +9,7 @@ export function createBlankPatient(number: number, now = new Date()): Patient {
     createdAt: timestamp,
     updatedAt: timestamp,
     photo: "",
+    photoThumb: "",
     identification: {
       name: "", rg: "", issuingBody: "", cpf: "", birthplace: "",
       nationality: "", maritalStatus: "", birthDate: "", sex: "",

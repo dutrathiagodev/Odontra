@@ -58,6 +58,24 @@ export interface Patient {
   updatedAt: string;
   /** Foto do paciente (data URL JPEG reduzida). Vazio quando não há foto. */
   photo: string;
+  /** Miniatura da foto (JPEG ~96px) para listas. Gerada ao salvar; vazia sem foto. */
+  photoThumb: string;
   identification: Identification;
   anamnesis: Anamnesis;
+}
+
+/**
+ * Paciente como aparece em listas (painel, agenda): sem a foto inteira e sem a anamnese.
+ * `thumb` é a imagem para o avatar (miniatura, ou a foto em cadastros antigos sem miniatura).
+ * O CPF não vem em `identification.cpf` (fica vazio): a lista só recebe `cpfMasked`.
+ */
+export interface PatientSummary {
+  id: string;
+  number: number;
+  createdAt: string;
+  updatedAt: string;
+  thumb: string;
+  /** CPF mascarado (***.456.789-**), para mostrar e buscar sem expor o número inteiro. */
+  cpfMasked: string;
+  identification: Identification;
 }

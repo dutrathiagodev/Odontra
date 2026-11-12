@@ -6,10 +6,12 @@ import { useState } from "react";
 import type { Patient } from "@/domain/patient/patient";
 import type { Visit } from "@/domain/visit/visit";
 import { deleteVisit, listVisits } from "@/infrastructure/container";
+import { deleteErrorMessage } from "../../async/delete-error";
 import { withTimeout } from "../../async/with-timeout";
 import { formatDate } from "../../format";
 import { useAsync } from "../../hooks/use-async";
-import { downloadRecordPdf, printRecordPdf } from "../../pdf/pdf-actions";
+import { downloadRecordPdf } from "../../pdf/pdf-actions";
+import { usePrintRecord } from "../../pdf/use-print-record";
 import { Button, linkButtonClass } from "../../ui/button";
 import { useConfirm } from "../../ui/confirm-dialog";
 
@@ -18,6 +20,8 @@ export function VisitHistory({ patient }: { patient: Patient }) {
   const visits = state.status === "ready" ? state.data : null;
   const [busyId, setBusyId] = useState<string | null>(null);
   const [actionError, setActionError] = useState("");
+  const printer = usePrintRecord();
+  const [printingId, setPrintingId] = useState<string | null>(null);
 
   const run = async (visit: Visit, action: (p: Patient, v: Visit) => Promise<void>) => {
     setBusyId(visit.id);
@@ -31,21 +35,32 @@ export function VisitHistory({ patient }: { patient: Patient }) {
     }
   };
 
+  // Chamado direto no toque: no iPhone/iPad a aba do PDF precisa abrir nesse momento.
+  const print = (visit: Visit) => {
+    setActionError("");
+    setPrintingId(visit.id);
+    printer.print(async () => ({ patient, visit }));
+  };
+
   const { confirm, dialog } = useConfirm();
 
   const remove = async (visit: Visit) => {
     const ok = await confirm({
       title: `Excluir a consulta ${visit.sequence}?`,
-      description: "O odontograma, as anotações e os procedimentos desta consulta serão apagados. As outras consultas do paciente continuam.",
+      description: "O odontograma, as anotações e os procedimentos desta consulta saem do histórico. Por lei (Lei 13.787/2018), o registro fica arquivado com segurança por 20 anos. As outras consultas do paciente continuam.",
       confirmLabel: "Excluir consulta",
     });
     if (!ok) return;
     setActionError("");
+    setBusyId(visit.id);
     try {
       await withTimeout(deleteVisit.execute(visit.id));
+    } catch (err) {
+      setActionError(deleteErrorMessage(err, "a consulta"));
+    } finally {
+      setBusyId(null);
+      // Recarrega mesmo na falha: o histórico mostra o que de fato ficou no banco.
       reload();
-    } catch {
-      setActionError("Não foi possível excluir a consulta agora. Tente de novo.");
     }
   };
 
@@ -73,7 +88,7 @@ export function VisitHistory({ patient }: { patient: Patient }) {
         <ol className="relative space-y-3 border-l-2 border-brand-100 pl-4">
           {visits.map((visit) => {
             const marked = Object.keys(visit.odontogram).length;
-            const busy = busyId === visit.id;
+            const busy = busyId === visit.id || (printer.busy && printingId === visit.id);
             return (
               <li key={visit.id} className="relative rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm">
                 <span className="absolute -left-[25px] top-5 h-3 w-3 rounded-full bg-brand-600 ring-4 ring-brand-100" />
@@ -91,10 +106,10 @@ export function VisitHistory({ patient }: { patient: Patient }) {
                   <Button variant="secondary" disabled={busy} onClick={() => run(visit, downloadRecordPdf)} className="flex-1">
                     <FileDown className="h-4 w-4" /> PDF
                   </Button>
-                  <Button variant="secondary" disabled={busy} onClick={() => run(visit, printRecordPdf)} className="flex-1">
+                  <Button variant="secondary" disabled={busy} onClick={() => print(visit)} className="flex-1">
                     <Printer className="h-4 w-4" /> Imprimir
                   </Button>
-                  <Button variant="danger" onClick={() => remove(visit)} aria-label="Excluir consulta" className="px-3">
+                  <Button variant="danger" disabled={busy} onClick={() => remove(visit)} aria-label="Excluir consulta" className="px-3">
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>

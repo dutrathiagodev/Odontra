@@ -3,7 +3,7 @@
 import { ExternalLink, Trash2 } from "lucide-react";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { DURATIONS, type Appointment } from "@/domain/appointment/appointment";
-import type { Patient } from "@/domain/patient/patient";
+import type { PatientSummary } from "@/domain/patient/patient";
 import { friendlyError } from "../async/with-timeout";
 import { BottomSheet } from "../ui/bottom-sheet";
 import { Button } from "../ui/button";
@@ -14,7 +14,7 @@ import { googleCalendarUrl } from "./google-calendar";
 interface AppointmentSheetProps {
   appointment: Appointment;
   isNew: boolean;
-  patients: Patient[];
+  patients: PatientSummary[];
   onSave: (appointment: Appointment) => Promise<unknown>;
   onDelete: (id: string) => Promise<void>;
   onClose: () => void;

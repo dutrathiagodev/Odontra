@@ -1,10 +1,14 @@
 import type { Appointment } from "@/domain/appointment/appointment";
 import type { AppointmentRepository } from "@/domain/appointment/appointment-repository";
-import { LocalStorageCollection } from "../local-storage-collection";
+import { DEVICE_STORE, LocalStorageCollection, type BrowserStoreConfig } from "../local-storage-collection";
 
-/** Agenda no aparelho, só para desenvolvimento sem Supabase. */
+/** Agenda no navegador: no aparelho (desenvolvimento sem Supabase) ou na aba (modo exemplo). */
 export class LocalStorageAppointmentRepository implements AppointmentRepository {
-  private readonly collection = new LocalStorageCollection<Appointment>("odontra:appointments");
+  private readonly collection: LocalStorageCollection<Appointment>;
+
+  constructor(config: BrowserStoreConfig = DEVICE_STORE) {
+    this.collection = new LocalStorageCollection<Appointment>(config.appointments, config.kind);
+  }
 
   async findBetween(from: Date, to: Date): Promise<Appointment[]> {
     return this.collection.all().filter((a) => {

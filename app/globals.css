@@ -54,6 +54,15 @@ html {
   background: #3b82f6;
 }
 
+/*
+ * Foco visível para quem usa teclado (não aparece no toque).
+ * :where() deixa a regra sem peso: componente com anel de foco próprio (campos de texto) continua mandando.
+ */
+:where(a[href], button, summary, [role="tab"], [role="radio"], [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
 /* Elementos decorativos nunca criam rolagem horizontal. */
 body {
   overflow-x: clip;
