@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { Patient } from "@/domain/patient/patient";
-import { deletePatient, listPatients } from "@/infrastructure/container";
+import { deletePatient, listPatients, loadDemoData } from "@/infrastructure/container";
+import { buildDemoData } from "../demo/demo-patients";
 
 export function usePatients() {
   const [patients, setPatients] = useState<Patient[] | null>(null);
@@ -24,5 +25,12 @@ export function usePatients() {
     setVersion((v) => v + 1);
   }, []);
 
-  return { patients, remove };
+  const loadDemo = useCallback(async () => {
+    const existing = await listPatients.execute();
+    const next = existing.reduce((max, p) => Math.max(max, p.number), 0) + 1;
+    await loadDemoData.execute(await buildDemoData(next));
+    setVersion((v) => v + 1);
+  }, []);
+
+  return { patients, remove, loadDemo };
 }
