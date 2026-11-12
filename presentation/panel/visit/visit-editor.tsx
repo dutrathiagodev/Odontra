@@ -63,8 +63,8 @@ export function VisitEditor({ patientId, visitId }: { patientId: string; visitId
     mergeSaved: (current, saved) => ({ ...current, visit: mergeSaved(current.visit, saved.visit) }),
     deps: [patientId, visitId],
   });
-  const leaveDialog = useLeaveGuard(editor.dirty);
 
+  const leaveDialog = useLeaveGuard(editor.dirty);
   if (editor.loadState !== "ready" || !editor.value) {
     return <LoadState state={editor.loadState === "ready" ? "loading" : editor.loadState} error={editor.loadError} missingText="Consulta não encontrada." onRetry={editor.retry} />;
   }
@@ -108,6 +108,7 @@ export function VisitEditor({ patientId, visitId }: { patientId: string; visitId
       </div>
 
       <HealthAlerts anamnesis={patient.anamnesis} />
+      {leaveDialog}
       {exportError && <p role="alert" className="rounded-lg bg-rose-50 px-3 py-2 text-sm font-medium text-rose-700 ring-1 ring-rose-200">{exportError}</p>}
 
       <div className="grid grid-cols-2 gap-2">
@@ -133,7 +134,6 @@ export function VisitEditor({ patientId, visitId }: { patientId: string; visitId
       {tab === "card" && <PaperRecordCard data={toPaperRecord(patient, visit)} onToothClick={() => setTab("teeth")} />}
 
       <SaveBar state={editor.saveState} error={editor.saveError} label="Salvar consulta" onSave={save} />
-      {leaveDialog}
     </div>
   );
 }

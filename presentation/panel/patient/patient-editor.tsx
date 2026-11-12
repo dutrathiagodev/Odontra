@@ -32,8 +32,8 @@ export function PatientEditor({ patientId }: { patientId?: string }) {
     mergeSaved,
     deps: [patientId],
   });
-  const { value: patient, edit } = editor;
   const leaveDialog = useLeaveGuard(editor.dirty);
+  const { value: patient, edit } = editor;
 
   if (editor.loadState !== "ready" || !patient) {
     return <LoadState state={editor.loadState === "ready" ? "loading" : editor.loadState} error={editor.loadError} missingText="Paciente não encontrado." onRetry={editor.retry} />;
