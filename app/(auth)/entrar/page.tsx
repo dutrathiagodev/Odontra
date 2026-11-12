@@ -7,7 +7,7 @@ export const metadata = { title: "Entrar — Odontra" };
 
 export default function SignInPage() {
   return (
-    <AuthShell title="Entrar no Odontra" description="Acesse os prontuários dos seus pacientes." footer={<>Ainda não tem conta? <Link href="/cadastro" className="font-medium text-accent hover:underline">Criar conta</Link></>}>
+    <AuthShell title="Bem-vindo de volta" description="Entre para abrir os prontuários dos seus pacientes." footer={<>Ainda não tem conta? <Link href="/cadastro" className="font-semibold text-white hover:underline">Criar conta</Link></>}>
       <Suspense>
         <SignInForm />
       </Suspense>

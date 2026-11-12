@@ -7,7 +7,7 @@ export function PasswordChecklist({ password }: { password: string }) {
       {PASSWORD_RULES.map((rule) => {
         const ok = rule.test(password);
         return (
-          <li key={rule.id} className={`flex items-center gap-1.5 ${ok ? "text-emerald-700" : "text-muted"}`}>
+          <li key={rule.id} className={`flex items-center gap-1.5 ${ok ? "text-emerald-300" : "text-white/50"}`}>
             <Check className={`h-3.5 w-3.5 ${ok ? "opacity-100" : "opacity-30"}`} aria-hidden />
             <span>{rule.label}</span>
           </li>

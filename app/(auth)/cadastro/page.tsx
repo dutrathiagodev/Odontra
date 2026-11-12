@@ -6,7 +6,7 @@ export const metadata = { title: "Criar conta — Odontra" };
 
 export default function SignUpPage() {
   return (
-    <AuthShell title="Criar conta" description="Uma conta por dentista. Os pacientes que você cadastrar ficam visíveis só para você." footer={<>Já tem conta? <Link href="/entrar" className="font-medium text-accent hover:underline">Entrar</Link></>}>
+    <AuthShell mode="signup" title="Criar conta" description="Uma conta por dentista. Os pacientes que você cadastrar ficam visíveis só para você." footer={<>Já tem conta? <Link href="/entrar" className="font-semibold text-white hover:underline">Entrar</Link></>}>
       <SignUpForm />
     </AuthShell>
   );

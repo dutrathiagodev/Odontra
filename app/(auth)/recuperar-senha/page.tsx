@@ -6,7 +6,7 @@ export const metadata = { title: "Recuperar senha — Odontra" };
 
 export default function ForgotPasswordPage() {
   return (
-    <AuthShell title="Recuperar senha" description="Informe o e-mail da conta e enviamos um link para criar uma nova senha." footer={<Link href="/entrar" className="font-medium text-accent hover:underline">Voltar para o login</Link>}>
+    <AuthShell mode="other" title="Recuperar senha" description="Informe o e-mail da conta e enviamos um link para criar uma nova senha." footer={<Link href="/entrar" className="font-semibold text-white hover:underline">Voltar para o login</Link>}>
       <ForgotPasswordForm />
     </AuthShell>
   );

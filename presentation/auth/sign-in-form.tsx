@@ -33,7 +33,7 @@ export function SignInForm() {
       <AuthField label="E-mail" type="email" value={email} onChange={setEmail} autoComplete="email" />
       <div>
         <AuthField label="Senha" type="password" value={password} onChange={setPassword} autoComplete="current-password" />
-        <Link href="/recuperar-senha" className="mt-2 inline-block text-sm font-medium text-accent hover:underline">Esqueci minha senha</Link>
+        <Link href="/recuperar-senha" className="mt-2 block text-right text-sm text-white/70 hover:text-white">Esqueci minha senha</Link>
       </div>
       <SubmitButton busy={busy}>Entrar</SubmitButton>
     </form>
