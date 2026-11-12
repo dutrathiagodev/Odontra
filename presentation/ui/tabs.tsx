@@ -3,6 +3,8 @@
 export interface TabItem<K extends string> {
   key: K;
   label: string;
+  /** Aba com campo a corrigir: ganha um ponto vermelho. */
+  alert?: boolean;
 }
 
 /** Abas roláveis na horizontal, pensadas para o polegar no celular. */
@@ -22,6 +24,12 @@ export function Tabs<K extends string>({ items, active, onChange }: { items: Tab
             }`}
           >
             {item.label}
+            {item.alert && (
+              <>
+                <span aria-hidden="true" className="ml-1.5 inline-block h-2 w-2 rounded-full bg-rose-500 align-middle" />
+                <span className="sr-only"> (tem campo a corrigir)</span>
+              </>
+            )}
           </button>
         );
       })}
