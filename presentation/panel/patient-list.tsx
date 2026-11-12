@@ -1,6 +1,6 @@
 "use client";
 
-import { CalendarClock, ChevronRight, Search, Trash2, UserPlus, Users, UserRoundPlus } from "lucide-react";
+import { CalendarClock, ChevronRight, Search, Sparkles, Trash2, UserPlus, Users, UserRoundPlus } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, type ReactNode } from "react";
 import { formatDate, formatRecordNumber } from "../format";
@@ -22,7 +22,8 @@ function Stat({ icon, label, value }: { icon: ReactNode; label: string; value: n
 }
 
 export function PatientList() {
-  const { patients, remove } = usePatients();
+  const { patients, remove, loadDemo } = usePatients();
+  const [loadingDemo, setLoadingDemo] = useState(false);
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
@@ -87,9 +88,26 @@ export function PatientList() {
             <p className="font-bold text-navy-900">{patients.length === 0 ? "Nenhum paciente cadastrado" : "Nenhum resultado"}</p>
             <p className="mt-1 text-sm text-slate-500">{patients.length === 0 ? "Cadastre o primeiro paciente para iniciar o prontuário." : "Tente outro nome, CPF ou telefone."}</p>
             {patients.length === 0 && (
-              <Link href="/painel/pacientes/novo" className={`${linkButtonClass()} mt-4`}>
-                <UserPlus className="h-4 w-4" /> Cadastrar paciente
-              </Link>
+              <div className="mt-4 flex flex-col items-center justify-center gap-2 sm:flex-row">
+                <Link href="/painel/pacientes/novo" className={linkButtonClass()}>
+                  <UserPlus className="h-4 w-4" /> Cadastrar paciente
+                </Link>
+                <button
+                  type="button"
+                  disabled={loadingDemo}
+                  onClick={async () => {
+                    setLoadingDemo(true);
+                    try {
+                      await loadDemo();
+                    } finally {
+                      setLoadingDemo(false);
+                    }
+                  }}
+                  className={linkButtonClass("secondary")}
+                >
+                  <Sparkles className="h-4 w-4" /> {loadingDemo ? "Carregando…" : "Ver com pacientes de exemplo"}
+                </button>
+              </div>
             )}
           </div>
         ) : (
