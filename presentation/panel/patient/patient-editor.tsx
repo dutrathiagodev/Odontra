@@ -9,7 +9,7 @@ import { useRecordEditor } from "../../hooks/use-record-editor";
 import { Avatar } from "../../ui/avatar";
 import { LoadState } from "../../ui/load-state";
 import { SaveBar } from "../../ui/save-bar";
-import { Tabs } from "../../ui/tabs";
+import { TabPanel, Tabs } from "../../ui/tabs";
 import { AnamnesisSection } from "./anamnesis-section";
 import { HealthAlerts } from "./health-alerts";
 import { IdentificationSection } from "./identification-section";
@@ -70,18 +70,20 @@ export function PatientEditor({ patientId }: { patientId?: string }) {
 
       {persisted && <HealthAlerts anamnesis={patient.anamnesis} />}
 
-      <Tabs items={tabs} active={tab} onChange={setTab} />
+      <Tabs items={tabs} active={tab} onChange={setTab} idBase="paciente" label="Seções do paciente" />
 
-      {tab === "data" && (
-        <div className="space-y-4">
-          <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
-            <PhotoField name={name} photo={patient.photo} onChange={(photo) => edit({ photo })} />
-          </div>
-          <IdentificationSection value={patient.identification} onChange={editIdentification} />
-        </div>
-      )}
-      {tab === "anamnesis" && <AnamnesisSection value={patient.anamnesis} onChange={editAnamnesis} />}
-      {tab === "history" && persisted && <VisitHistory patient={patient} />}
+      <TabPanel idBase="paciente" active={tab}>
+        {tab === "data" && (
+          <>
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-sm">
+              <PhotoField name={name} photo={patient.photo} onChange={(photo) => edit({ photo })} />
+            </div>
+            <IdentificationSection value={patient.identification} onChange={editIdentification} />
+          </>
+        )}
+        {tab === "anamnesis" && <AnamnesisSection value={patient.anamnesis} onChange={editAnamnesis} />}
+        {tab === "history" && persisted && <VisitHistory patient={patient} />}
+      </TabPanel>
 
       {tab !== "history" && (
         <SaveBar

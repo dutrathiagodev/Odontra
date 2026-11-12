@@ -17,7 +17,7 @@ import { Button } from "../../ui/button";
 import { LoadState } from "../../ui/load-state";
 import { SaveBar } from "../../ui/save-bar";
 import { SectionCard } from "../../ui/section-card";
-import { Tabs } from "../../ui/tabs";
+import { TabPanel, Tabs } from "../../ui/tabs";
 import { HealthAlerts } from "../patient/health-alerts";
 import { ClinicalExamSection, ConsultationSection, FindingsSection, OralHealthSection } from "./visit-sections";
 
@@ -96,8 +96,8 @@ export function VisitEditor({ patientId, visitId }: { patientId: string; visitId
 
   return (
     <div className="space-y-4">
-      <Link href={`/painel/pacientes/${patientId}`} className="inline-flex min-h-10 items-center gap-1.5 text-sm font-bold text-brand-700">
-        <ArrowLeft className="h-4 w-4" /> {patient.identification.name || "Paciente"}
+      <Link href={`/painel/pacientes/${patientId}`} className="-ml-1 inline-flex min-h-11 items-center gap-1.5 rounded-lg px-1 text-sm font-bold text-brand-700">
+        <ArrowLeft aria-hidden="true" className="h-4 w-4" /> {patient.identification.name || "Paciente"}
       </Link>
 
       <div>
@@ -117,18 +117,20 @@ export function VisitEditor({ patientId, visitId }: { patientId: string; visitId
         </Button>
       </div>
 
-      <Tabs items={TABS} active={tab} onChange={setTab} />
+      <Tabs items={TABS} active={tab} onChange={setTab} idBase="consulta" label="Seções da consulta" />
 
-      {tab === "visit" && <ConsultationSection visit={visit} onChange={edit} />}
-      {tab === "oral" && <OralHealthSection value={visit.oralHealth} onChange={(patch) => edit({ oralHealth: { ...visit.oralHealth, ...patch } })} />}
-      {tab === "exam" && <ClinicalExamSection value={visit.clinicalExam} onChange={(patch) => edit({ clinicalExam: { ...visit.clinicalExam, ...patch } })} />}
-      {tab === "teeth" && (
-        <SectionCard title="Odontograma" description="Parte do odontograma da consulta anterior.">
-          <OdontogramChart value={visit.odontogram} onChange={(odontogram) => edit({ odontogram })} />
-        </SectionCard>
-      )}
-      {tab === "findings" && <FindingsSection value={visit.findings} onChange={(findings) => edit({ findings })} />}
-      {tab === "card" && <PaperRecordCard data={toPaperRecord(patient, visit)} onToothClick={() => setTab("teeth")} />}
+      <TabPanel idBase="consulta" active={tab}>
+        {tab === "visit" && <ConsultationSection visit={visit} onChange={edit} />}
+        {tab === "oral" && <OralHealthSection value={visit.oralHealth} onChange={(patch) => edit({ oralHealth: { ...visit.oralHealth, ...patch } })} />}
+        {tab === "exam" && <ClinicalExamSection value={visit.clinicalExam} onChange={(patch) => edit({ clinicalExam: { ...visit.clinicalExam, ...patch } })} />}
+        {tab === "teeth" && (
+          <SectionCard title="Odontograma" description="Parte do odontograma da consulta anterior.">
+            <OdontogramChart value={visit.odontogram} onChange={(odontogram) => edit({ odontogram })} />
+          </SectionCard>
+        )}
+        {tab === "findings" && <FindingsSection value={visit.findings} onChange={(findings) => edit({ findings })} />}
+        {tab === "card" && <PaperRecordCard data={toPaperRecord(patient, visit)} onToothClick={() => setTab("teeth")} />}
+      </TabPanel>
 
       <SaveBar state={editor.saveState} error={editor.saveError} label="Salvar consulta" onSave={save} />
     </div>
