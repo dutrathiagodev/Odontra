@@ -8,6 +8,7 @@ import { PaperCardSection } from "@/presentation/landing/paper-card-section";
 import { PainPoints } from "@/presentation/landing/pain-points";
 import { ProductTour } from "@/presentation/landing/product-tour";
 import { QrSection } from "@/presentation/landing/qr-section";
+import { WhatsAppButton } from "@/presentation/landing/whatsapp-button";
 import { SmoothScroll } from "@/presentation/landing/smooth-scroll";
 
 export default function Home() {
@@ -26,6 +27,7 @@ export default function Home() {
       </main>
       <LandingFooter />
       <MobileTabBar />
+      <WhatsAppButton />
     </>
   );
 }
