@@ -28,7 +28,13 @@ app (rotas) ─► presentation ─► application ─► domain
 
 - `/` landing · `/painel` lista de pacientes · `/painel/pacientes/[id]` ficha (dados, anamnese, histórico)
 - `/painel/pacientes/[id]/consultas/[visitId]` consulta: odontograma clicável, **Gerar PDF** e **Imprimir**
+- `/painel/anatomia` anatomia interativa do dente (`presentation/anatomy`).
 - PDF (`presentation/pdf`): `@react-pdf/renderer`, A4, carregado sob demanda; QR code do site no rodapé.
+- Pacientes de exemplo: `LoadDemoData` (application) + `presentation/demo/demo-patients.ts` (fotos do Unsplash).
+
+## Landing
+
+`presentation/landing/`: hero com `TiltCard` e odontograma clicável, `Marquee`, `ProductTour` (cenas em `tour/`), `AnatomySection`. Animações em `app/globals.css`, com `Reveal` (IntersectionObserver) e `CountUp`; tudo desligado com `prefers-reduced-motion`. Conteúdo editável em `landing-content.ts`.
 
 ## Convenções de clean code
 
