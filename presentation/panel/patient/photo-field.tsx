@@ -2,19 +2,23 @@
 
 import { Camera, Image as ImageIcon, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
-import { fileToCompressedDataUrl } from "../../image";
+import { fileToCompressedDataUrl, photoErrorMessage } from "../../image";
 import { Avatar } from "../../ui/avatar";
 
 export function PhotoField({ name, photo, onChange }: { name: string; photo: string; onChange: (photo: string) => void }) {
   const cameraRef = useRef<HTMLInputElement>(null);
   const galleryRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
 
   const handleFile = async (file: File | undefined) => {
     if (!file) return;
     setBusy(true);
+    setError("");
     try {
       onChange(await fileToCompressedDataUrl(file));
+    } catch (err) {
+      setError(photoErrorMessage(err));
     } finally {
       setBusy(false);
     }
@@ -33,11 +37,12 @@ export function PhotoField({ name, photo, onChange }: { name: string; photo: str
           <ImageIcon className="h-4 w-4 text-brand-600" /> Galeria
         </button>
         {photo && (
-          <button type="button" onClick={() => onChange("")} aria-label="Remover foto" className={`${pill} text-rose-600`}>
+          <button type="button" onClick={() => { setError(""); onChange(""); }} aria-label="Remover foto" className={`${pill} text-rose-600`}>
             <Trash2 className="h-4 w-4" />
           </button>
         )}
       </div>
+      {error && <p role="alert" className="max-w-xs text-center text-sm font-medium text-rose-700">{error}</p>}
       <input ref={cameraRef} type="file" accept="image/*" capture="user" hidden onChange={(e) => { void handleFile(e.target.files?.[0]); e.target.value = ""; }} />
       <input ref={galleryRef} type="file" accept="image/*" hidden onChange={(e) => { void handleFile(e.target.files?.[0]); e.target.value = ""; }} />
     </div>
