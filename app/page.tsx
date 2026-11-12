@@ -1,29 +1,29 @@
 import { AnatomySection } from "@/presentation/landing/anatomy-section";
-import { Expertise } from "@/presentation/landing/expertise";
+import { FlowSection } from "@/presentation/landing/flow-section";
 import { Hero } from "@/presentation/landing/hero";
 import { LandingFooter } from "@/presentation/landing/landing-footer";
 import { LandingHeader } from "@/presentation/landing/landing-header";
-import { Marquee } from "@/presentation/landing/marquee";
+import { MobileTabBar } from "@/presentation/landing/mobile-tab-bar";
+import { PainPoints } from "@/presentation/landing/pain-points";
 import { ProductTour } from "@/presentation/landing/product-tour";
 import { QrSection } from "@/presentation/landing/qr-section";
-import { Services } from "@/presentation/landing/services";
-import { WhySection } from "@/presentation/landing/why-section";
+import { SmoothScroll } from "@/presentation/landing/smooth-scroll";
 
 export default function Home() {
   return (
     <>
+      <SmoothScroll />
       <LandingHeader />
       <main>
         <Hero />
-        <Marquee />
+        <PainPoints />
+        <FlowSection />
         <ProductTour />
-        <Expertise />
         <AnatomySection />
-        <WhySection />
-        <Services />
         <QrSection />
       </main>
       <LandingFooter />
+      <MobileTabBar />
     </>
   );
 }
