@@ -11,11 +11,17 @@ export function usePatients() {
   const { state, reload, retry } = useAsync(() => listPatients.execute(), []);
   const patients: Patient[] | null = state.status === "ready" ? state.data : null;
 
-  /** Exclui e recarrega. Lança erro (com tempo limite) para a tela avisar. */
+  /**
+   * Exclui e recarrega. Lança erro (com tempo limite) para a tela avisar.
+   * Recarrega também na falha: a lista mostra o que de fato ficou no banco.
+   */
   const remove = useCallback(
     async (id: string) => {
-      await withTimeout(deletePatient.execute(id));
-      reload();
+      try {
+        await withTimeout(deletePatient.execute(id));
+      } finally {
+        reload();
+      }
     },
     [reload],
   );

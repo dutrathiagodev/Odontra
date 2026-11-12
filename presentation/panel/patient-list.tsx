@@ -3,6 +3,7 @@
 import { CalendarClock, ChevronRight, Search, Sparkles, Trash2, UserPlus, Users, UserRoundPlus } from "lucide-react";
 import Link from "next/link";
 import { useMemo, useState, type ReactNode } from "react";
+import { deleteErrorMessage } from "../async/delete-error";
 import { formatDate, formatRecordNumber } from "../format";
 import { usePatients } from "../hooks/use-patients";
 import { Avatar } from "../ui/avatar";
@@ -26,6 +27,7 @@ export function PatientList() {
   const { patients, error, retry, remove, loadDemo } = usePatients();
   const [actionError, setActionError] = useState("");
   const [loadingDemo, setLoadingDemo] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
   const filtered = useMemo(() => {
@@ -63,10 +65,13 @@ export function PatientList() {
     });
     if (!ok) return;
     setActionError("");
+    setDeletingId(id);
     try {
       await remove(id);
-    } catch {
-      setActionError("Não foi possível excluir agora. Verifique a conexão e tente de novo.");
+    } catch (err) {
+      setActionError(deleteErrorMessage(err, "o paciente"));
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -177,6 +182,8 @@ export function PatientList() {
                     </Link>
                     <button
                       onClick={() => confirmRemove(patient.id, name)}
+                      disabled={deletingId !== null}
+                      aria-busy={deletingId === patient.id}
                       aria-label={`Excluir ${name}`}
                       className="absolute right-3 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-lg text-slate-300 transition hover:bg-rose-50 hover:text-rose-600 md:right-14"
                     >
