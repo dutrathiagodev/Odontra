@@ -1,4 +1,5 @@
 import { Suspense, type ReactNode } from "react";
+import { DemoBanner } from "../demo/demo-banner";
 import { InstallBanner } from "../pwa/install-banner";
 import { Logo } from "../ui/logo";
 import { PanelNav } from "./panel-nav";
@@ -28,7 +29,10 @@ export function PanelShell({ children }: { children: ReactNode }) {
       </header>
 
       <div className="lg:pl-64">
-        <main className="mx-auto w-full max-w-6xl px-4 pb-44 pt-5 sm:px-8 sm:pt-8 lg:pb-12">{children}</main>
+        <main className="mx-auto w-full max-w-6xl px-4 pb-44 pt-5 sm:px-8 sm:pt-8 lg:pb-12">
+          <DemoBanner />
+          {children}
+        </main>
       </div>
 
       <Suspense fallback={null}>
