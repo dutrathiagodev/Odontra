@@ -1,39 +1,44 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { getBrowserSupabase } from "@/infrastructure/supabase/browser-client";
 import { authErrorMessage } from "./auth-errors";
 import { AuthField, FormMessage, SubmitButton } from "./auth-field";
 import { PasswordChecklist } from "./password-checklist";
 import { isPasswordValid } from "./password-policy";
+import { useAuthSubmit } from "./use-auth-submit";
 
 export function SignUpForm() {
+  const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
   const [sentTo, setSentTo] = useState("");
+  const { busy, error, setError, run } = useAuthSubmit();
 
-  const submit = async (event: FormEvent) => {
+  const submit = (event: FormEvent) => {
     event.preventDefault();
-    setError("");
     if (!name.trim()) return setError("Informe seu nome como aparece no prontuário.");
+    if (!email.trim()) return setError("Informe seu e-mail.");
     if (!isPasswordValid(password)) return setError("A senha ainda não atende aos requisitos abaixo.");
 
-    setBusy(true);
-    const { error: authError } = await getBrowserSupabase().auth.signUp({
-      email: email.trim(),
-      password,
-      options: {
-        data: { full_name: name.trim() },
-        emailRedirectTo: `${window.location.origin}/painel`,
-      },
+    run(async () => {
+      const { data, error: authError } = await getBrowserSupabase().auth.signUp({
+        email: email.trim(),
+        password,
+        options: { data: { full_name: name.trim() } },
+      });
+      if (authError) return authErrorMessage(authError);
+      // Conta criada já com sessão: entra direto no painel.
+      if (data.session) {
+        router.replace("/painel");
+        router.refresh();
+        return;
+      }
+      // Projeto exigindo confirmação por e-mail: mesma resposta para e-mail novo ou já cadastrado.
+      setSentTo(email.trim());
     });
-    setBusy(false);
-    if (authError) return setError(authErrorMessage(authError));
-    // Mesma resposta para e-mail novo ou já cadastrado: não revela quem tem conta.
-    setSentTo(email.trim());
   };
 
   if (sentTo) {
