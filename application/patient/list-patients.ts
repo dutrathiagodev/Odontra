@@ -6,6 +6,8 @@ export class ListPatients {
 
   async execute(): Promise<Patient[]> {
     const all = await this.patients.findAll();
-    return [...all].sort((a, b) => a.name.localeCompare(b.name));
+    return [...all].sort((a, b) =>
+      a.identification.name.localeCompare(b.identification.name, "pt-BR"),
+    );
   }
 }

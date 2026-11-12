@@ -1,13 +1,23 @@
-import { listPatients } from "@/infrastructure/container";
-import { PatientList } from "@/presentation/components/patient-list";
+import { Expertise } from "@/presentation/landing/expertise";
+import { Hero } from "@/presentation/landing/hero";
+import { LandingFooter } from "@/presentation/landing/landing-footer";
+import { LandingHeader } from "@/presentation/landing/landing-header";
+import { QrSection } from "@/presentation/landing/qr-section";
+import { Services } from "@/presentation/landing/services";
+import { WhySection } from "@/presentation/landing/why-section";
 
-export default async function Home() {
-  const patients = await listPatients.execute();
-
+export default function Home() {
   return (
-    <main className="mx-auto max-w-2xl p-8">
-      <h1 className="mb-4 text-2xl font-bold">Prontuário Maju</h1>
-      <PatientList patients={patients} />
-    </main>
+    <>
+      <LandingHeader />
+      <main>
+        <Hero />
+        <Expertise />
+        <WhySection />
+        <Services />
+        <QrSection />
+      </main>
+      <LandingFooter />
+    </>
   );
 }
