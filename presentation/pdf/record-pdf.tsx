@@ -1,5 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text -- <Image> do react-pdf não é um <img> HTML */
 import { Circle, Document, G, Image, Line, Page, Path, Rect, StyleSheet, Svg, Text, View } from "@react-pdf/renderer";
+import { CLINICAL_OPTIONS } from "@/domain/visit/clinical-options";
 import type { ReactNode } from "react";
 import { DISEASE_CATEGORIES, type Patient } from "@/domain/patient/patient";
 import { LOWER_TEETH, TOOTH_CONDITION_LABELS, UPPER_TEETH, type ToothCondition } from "@/domain/tooth";
@@ -92,7 +93,7 @@ function YesNo({ value }: { value: string }) {
   );
 }
 
-function Options({ value, items }: { value: string; items: [string, string][] }) {
+function Options({ value, items }: { value: string; items: readonly (readonly [string, string])[] }) {
   return (
     <>
       {items.map(([key, label]) => (
@@ -357,22 +358,22 @@ export function RecordPdf({ patient, visit, logoSrc, qrDataUrl, siteUrl }: Recor
 
         <Bar title="Exame Clínico" />
         <Row>
-          <Field label="Higiene" flex={1.6}><Options value={ex.hygiene} items={[["normal", "Normal"], ["regular", "Regular"], ["bad", "Ruim"]]} /></Field>
+          <Field label="Higiene" flex={1.6}><Options value={ex.hygiene} items={CLINICAL_OPTIONS.hygiene} /></Field>
           <Field label="Língua" value={ex.tongue} />
         </Row>
         <Row>
-          <Field label="Halitose" flex={1.6}><Options value={ex.halitosis} items={[["absent", "Ausente"], ["moderate", "Moderada"], ["strong", "Forte"]]} /></Field>
+          <Field label="Halitose" flex={1.6}><Options value={ex.halitosis} items={CLINICAL_OPTIONS.halitosis} /></Field>
           <Field label="Palato" value={ex.palate} />
         </Row>
         <Row>
-          <Field label="Tártaro" flex={1.6}><Options value={ex.tartar} items={[["absent", "Ausente"], ["little", "Pouco"], ["much", "Muito"]]} /></Field>
+          <Field label="Tártaro" flex={1.6}><Options value={ex.tartar} items={CLINICAL_OPTIONS.tartar} /></Field>
           <Field label="Assoalho bucal" value={ex.mouthFloor} />
         </Row>
         <Row>
-          <Field label="Gengiva" flex={1.6}><Options value={ex.gingiva} items={[["normal", "Normal"], ["gingivitis", "Gengivite"], ["periodontitis", "Periodontite"]]} /></Field>
+          <Field label="Gengiva" flex={1.6}><Options value={ex.gingiva} items={CLINICAL_OPTIONS.gingiva} /></Field>
           <Field label="Lábios" value={ex.lips} />
         </Row>
-        <Row><Field label="Mucosa"><Options value={ex.mucosa} items={[["normal", "Normal"], ["altered", "Alterada"]]} /></Field></Row>
+        <Row><Field label="Mucosa"><Options value={ex.mucosa} items={CLINICAL_OPTIONS.mucosa} /></Field></Row>
 
         <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 6 }} wrap={false}>
           <TeethChart odontogram={visit.odontogram} />

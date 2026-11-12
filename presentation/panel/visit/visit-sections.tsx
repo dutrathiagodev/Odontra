@@ -1,6 +1,7 @@
 "use client";
 
 import type { ClinicalExam, OralHealth, Visit } from "@/domain/visit/visit";
+import { CLINICAL_OPTIONS, toChoices } from "@/domain/visit/clinical-options";
 import { ChoiceField, TextAreaField, TextField, YesNoField } from "../../ui/fields";
 import { SectionCard } from "../../ui/section-card";
 
@@ -38,11 +39,11 @@ export function OralHealthSection({ value, onChange }: { value: OralHealth; onCh
 export function ClinicalExamSection({ value, onChange }: { value: ClinicalExam; onChange: (patch: Partial<ClinicalExam>) => void }) {
   return (
     <SectionCard title="Exame clínico">
-      <ChoiceField label="Higiene" options={[{ value: "normal", label: "Normal" }, { value: "regular", label: "Regular" }, { value: "bad", label: "Ruim" }]} value={value.hygiene} onChange={(hygiene) => onChange({ hygiene })} />
-      <ChoiceField label="Halitose" options={[{ value: "absent", label: "Ausente" }, { value: "moderate", label: "Moderada" }, { value: "strong", label: "Forte" }]} value={value.halitosis} onChange={(halitosis) => onChange({ halitosis })} />
-      <ChoiceField label="Tártaro" options={[{ value: "absent", label: "Ausente" }, { value: "little", label: "Pouco" }, { value: "much", label: "Muito" }]} value={value.tartar} onChange={(tartar) => onChange({ tartar })} />
-      <ChoiceField label="Gengiva" options={[{ value: "normal", label: "Normal" }, { value: "gingivitis", label: "Gengivite" }, { value: "periodontitis", label: "Periodontite" }]} value={value.gingiva} onChange={(gingiva) => onChange({ gingiva })} />
-      <ChoiceField label="Mucosa" options={[{ value: "normal", label: "Normal" }, { value: "altered", label: "Alterada" }]} value={value.mucosa} onChange={(mucosa) => onChange({ mucosa })} />
+      <ChoiceField label="Higiene" options={toChoices(CLINICAL_OPTIONS.hygiene)} value={value.hygiene} onChange={(hygiene) => onChange({ hygiene })} />
+      <ChoiceField label="Halitose" options={toChoices(CLINICAL_OPTIONS.halitosis)} value={value.halitosis} onChange={(halitosis) => onChange({ halitosis })} />
+      <ChoiceField label="Tártaro" options={toChoices(CLINICAL_OPTIONS.tartar)} value={value.tartar} onChange={(tartar) => onChange({ tartar })} />
+      <ChoiceField label="Gengiva" options={toChoices(CLINICAL_OPTIONS.gingiva)} value={value.gingiva} onChange={(gingiva) => onChange({ gingiva })} />
+      <ChoiceField label="Mucosa" options={toChoices(CLINICAL_OPTIONS.mucosa)} value={value.mucosa} onChange={(mucosa) => onChange({ mucosa })} />
       <div className="grid gap-4 sm:grid-cols-2">
         <TextField label="Língua" value={value.tongue} onChange={(tongue) => onChange({ tongue })} />
         <TextField label="Palato" value={value.palate} onChange={(palate) => onChange({ palate })} />
