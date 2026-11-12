@@ -138,3 +138,33 @@ html {
   .reveal { opacity: 1; transform: none; transition: none; }
   .animate-float-slow, .animate-float-tooth, .animate-marquee, .animate-pulse-ring, .animate-slide-up { animation: none; }
 }
+
+/* Fluxo da landing: tracejado correndo pelas linhas. */
+@keyframes wire-flow {
+  to { stroke-dashoffset: -24; }
+}
+.flow-wire {
+  stroke-dasharray: 6 6;
+  animation: wire-flow 1.2s linear infinite;
+  opacity: 0.7;
+}
+
+/* Entrada do hero: um único momento orquestrado ao carregar. */
+@keyframes hero-in {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: none; }
+}
+.hero-intro { animation: hero-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) both; }
+.hero-demo { animation: hero-in 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.15s both; }
+
+/* Espaço para a barra inferior fixa no celular e no iPad em pé. */
+.has-tab-bar {
+  padding-bottom: calc(4.5rem + env(safe-area-inset-bottom));
+}
+@media (min-width: 1024px) {
+  .has-tab-bar { padding-bottom: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flow-wire, .hero-intro, .hero-demo { animation: none; }
+}
