@@ -4,23 +4,23 @@ import { useState, type FormEvent } from "react";
 import { getBrowserSupabase } from "@/infrastructure/supabase/browser-client";
 import { authErrorMessage } from "./auth-errors";
 import { AuthField, FormMessage, SubmitButton } from "./auth-field";
+import { useAuthSubmit } from "./use-auth-submit";
 
 export function ForgotPasswordForm() {
   const [email, setEmail] = useState("");
-  const [busy, setBusy] = useState(false);
-  const [error, setError] = useState("");
   const [sent, setSent] = useState(false);
+  const { busy, error, setError, run } = useAuthSubmit();
 
-  const submit = async (event: FormEvent) => {
+  const submit = (event: FormEvent) => {
     event.preventDefault();
-    setBusy(true);
-    setError("");
-    const { error: authError } = await getBrowserSupabase().auth.resetPasswordForEmail(email.trim(), {
-      redirectTo: `${window.location.origin}/redefinir-senha`,
+    if (!email.trim()) return setError("Informe o e-mail da conta.");
+    run(async () => {
+      const { error: authError } = await getBrowserSupabase().auth.resetPasswordForEmail(email.trim(), {
+        redirectTo: `${window.location.origin}/auth/confirm?next=/redefinir-senha`,
+      });
+      if (authError) return authErrorMessage(authError);
+      setSent(true);
     });
-    setBusy(false);
-    if (authError) return setError(authErrorMessage(authError));
-    setSent(true);
   };
 
   if (sent) {
