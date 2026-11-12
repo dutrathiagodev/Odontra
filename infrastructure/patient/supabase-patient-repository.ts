@@ -3,15 +3,17 @@ import type { Patient, PatientSummary } from "@/domain/patient/patient";
 import type { PatientRepository } from "@/domain/patient/patient-repository";
 import { archiveRow } from "../supabase/archive-row";
 
-const COLUMNS = "id, record_number, photo, photo_thumb, identification, anamnesis, created_at, updated_at";
-/** Lista: sem a foto inteira e sem a anamnese. */
-const SUMMARY_COLUMNS = "id, record_number, photo_thumb, has_photo, identification, created_at, updated_at";
+// O CPF não vem no JSON (o banco guarda cifrado): a lista recebe só a máscara e a ficha abre pela RPC.
+const COLUMNS = "id, record_number, photo, photo_thumb, cpf_masked, identification, anamnesis, created_at, updated_at";
+/** Lista: sem a foto inteira, sem a anamnese e sem o CPF inteiro. */
+const SUMMARY_COLUMNS = "id, record_number, photo_thumb, has_photo, cpf_masked, identification, created_at, updated_at";
 
 interface PatientRow {
   id: string;
   record_number: number;
   photo: string;
   photo_thumb: string;
+  cpf_masked: string;
   identification: Patient["identification"];
   anamnesis: Patient["anamnesis"];
   created_at: string;
@@ -23,6 +25,7 @@ interface SummaryRow {
   record_number: number;
   photo_thumb: string;
   has_photo: boolean;
+  cpf_masked: string;
   identification: Patient["identification"];
   created_at: string;
   updated_at: string;
@@ -46,7 +49,8 @@ function toSummary(row: SummaryRow, legacyPhotos: Map<string, string>): PatientS
     id: row.id,
     number: row.record_number,
     thumb: row.photo_thumb || legacyPhotos.get(row.id) || "",
-    identification: row.identification,
+    cpfMasked: row.cpf_masked,
+    identification: { ...row.identification, cpf: "" },
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -80,7 +84,22 @@ export class SupabasePatientRepository implements PatientRepository {
   async findById(id: string): Promise<Patient | null> {
     const { data, error } = await this.db().from("patients").select(COLUMNS).eq("id", id).is("deleted_at", null).maybeSingle();
     if (error) throw error;
-    return data ? toDomain(data as PatientRow) : null;
+    if (!data) return null;
+    const row = data as PatientRow;
+    const patient = toDomain(row);
+    if (!row.cpf_masked) return patient;
+    return { ...patient, identification: { ...patient.identification, cpf: await this.decryptCpf(id) } };
+  }
+
+  /**
+   * O CPF fica cifrado no banco; só o dono lê, pela RPC. Se não vier, falha em vez de seguir
+   * com o campo vazio: salvar a ficha com CPF vazio apagaria o CPF gravado.
+   */
+  private async decryptCpf(id: string): Promise<string> {
+    const { data, error } = await this.db().rpc("get_patient_cpf", { p_id: id });
+    if (error) throw error;
+    if (typeof data !== "string") throw new Error("cpf-unavailable");
+    return data;
   }
 
   async save(patient: Patient): Promise<Patient> {

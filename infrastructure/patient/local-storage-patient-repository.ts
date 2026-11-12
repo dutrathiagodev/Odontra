@@ -1,5 +1,6 @@
 import type { Appointment } from "@/domain/appointment/appointment";
 import { RecordNotFoundError } from "@/domain/errors";
+import { maskCpf } from "@/domain/patient/cpf";
 import type { Patient, PatientSummary } from "@/domain/patient/patient";
 import type { PatientRepository } from "@/domain/patient/patient-repository";
 import type { Visit } from "@/domain/visit/visit";
@@ -23,7 +24,9 @@ export class LocalStoragePatientRepository implements PatientRepository {
       createdAt: p.createdAt,
       updatedAt: p.updatedAt,
       thumb: p.photoThumb || p.photo,
-      identification: p.identification,
+      // Mesmo contrato do Supabase: a lista recebe só o CPF mascarado.
+      cpfMasked: maskCpf(p.identification.cpf),
+      identification: { ...p.identification, cpf: "" },
     }));
   }
 

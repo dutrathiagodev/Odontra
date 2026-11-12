@@ -67,6 +67,7 @@ export interface Patient {
 /**
  * Paciente como aparece em listas (painel, agenda): sem a foto inteira e sem a anamnese.
  * `thumb` é a imagem para o avatar (miniatura, ou a foto em cadastros antigos sem miniatura).
+ * O CPF não vem em `identification.cpf` (fica vazio): a lista só recebe `cpfMasked`.
  */
 export interface PatientSummary {
   id: string;
@@ -74,5 +75,7 @@ export interface PatientSummary {
   createdAt: string;
   updatedAt: string;
   thumb: string;
+  /** CPF mascarado (***.456.789-**), para mostrar e buscar sem expor o número inteiro. */
+  cpfMasked: string;
   identification: Identification;
 }
